@@ -40,9 +40,9 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>180</y>
+      <y>150</y>
       <width>750</width>
-      <height>400</height>
+      <height>430</height>
      </rect>
     </property>
     <property name="font">
@@ -110,7 +110,7 @@
    <widget class="QPushButton" name="btnLocUpd">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>480</x>
       <y>100</y>
       <width>90</width>
       <height>30</height>
@@ -123,6 +123,64 @@
     </property>
     <property name="text">
      <string>位置更新</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn4to3">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>80</y>
+      <width>90</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>4G -&gt; 3G</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn3to2">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>110</y>
+      <width>90</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>3G -&gt; 2G</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn3to4">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>80</y>
+      <width>90</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>3G -&gt; 4G</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn2to3">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>110</y>
+      <width>90</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>2G -&gt; 3G</string>
     </property>
    </widget>
   </widget>
@@ -138,6 +196,12 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>inputBox</tabstop>
+  <tabstop>btnQuery</tabstop>
+  <tabstop>btnLocUpd</tabstop>
+  <tabstop>textBrowser</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
