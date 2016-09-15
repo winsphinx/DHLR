@@ -52,6 +52,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.setupUi(self)
         self.btnQuery.clicked.connect(self.queryUser)
         self.btnLocUpd.clicked.connect(self.updateLocation)
+        self.btn4to3.clicked.connect(self.four_three)
+        self.btn3to2.clicked.connect(self.three_two)
+        self.btn2to3.clicked.connect(self.two_three)
+        self.btn3to4.clicked.connect(self.three_four)
         self.connect(
             self.inputBox,
             QtCore.SIGNAL('returnPressed()'),
@@ -264,6 +268,70 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                 self.textBrowser.append(u'<font color=red>无效用户!</font>')
 
         DHLR.closeDHLR()
+
+    def four_three(self):
+        self.textBrowser.clear()
+        try:
+            DHLR.loginDHLR(host, port, username, password)
+        except:
+            self.textBrowser.append(u'<font color=red>连接出错!</font>')
+            return
+        if self.checkInput():
+            flag, num = self.checkInput()
+            try:
+                imsi = self.getIMSI(flag, num)
+                DHLR.sendDHLRCmd('ZMNE:IMSI=' + imsi + ':STATUS=DENIED;\r')
+                self.textBrowser.append(u'<font color=green>操作成功!</font>')
+            except:
+                self.textBrowser.append(u'<font color=red>无效用户!</font>')
+
+    def three_four(self):
+        self.textBrowser.clear()
+        try:
+            DHLR.loginDHLR(host, port, username, password)
+        except:
+            self.textBrowser.append(u'<font color=red>连接出错!</font>')
+            return
+        if self.checkInput():
+            flag, num = self.checkInput()
+            try:
+                imsi = self.getIMSI(flag, num)
+                DHLR.sendDHLRCmd('ZMNE:IMSI=' + imsi + ':STATUS=GRANTED;\r')
+                self.textBrowser.append(u'<font color=green>操作成功!</font>')
+            except:
+                self.textBrowser.append(u'<font color=red>无效用户!</font>')
+
+    def three_two(self):
+        self.textBrowser.clear()
+        try:
+            DHLR.loginDHLR(host, port, username, password)
+        except:
+            self.textBrowser.append(u'<font color=red>连接出错!</font>')
+            return
+        if self.checkInput():
+            flag, num = self.checkInput()
+            try:
+                imsi = self.getIMSI(flag, num)
+                DHLR.sendDHLRCmd('ZMIM:IMSI=' + imsi + ':UREST=Y;\r')
+                self.textBrowser.append(u'<font color=green>操作成功!</font>')
+            except:
+                self.textBrowser.append(u'<font color=red>无效用户!</font>')
+
+    def two_three(self):
+        self.textBrowser.clear()
+        try:
+            DHLR.loginDHLR(host, port, username, password)
+        except:
+            self.textBrowser.append(u'<font color=red>连接出错!</font>')
+            return
+        if self.checkInput():
+            flag, num = self.checkInput()
+            try:
+                imsi = self.getIMSI(flag, num)
+                DHLR.sendDHLRCmd('ZMIM:IMSI=' + imsi + ':UREST=N;\r')
+                self.textBrowser.append(u'<font color=green>操作成功!</font>')
+            except:
+                self.textBrowser.append(u'<font color=red>无效用户!</font>')
 
 
 class DHLRTelnet(object):
