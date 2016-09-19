@@ -56,6 +56,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.btn3to2.clicked.connect(self.three_two)
         self.btn2to3.clicked.connect(self.two_three)
         self.btn3to4.clicked.connect(self.three_four)
+        self.btnQueryOther.clicked.connect(self.queryOther)
         self.connect(
             self.inputBox,
             QtCore.SIGNAL('returnPressed()'),
@@ -333,6 +334,23 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                 self.textBrowser.append(u'<font color=green>操作成功!</font>')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!</font>')
+
+    def queryOther(self):
+        self.textBrowser.clear()
+        if self.checkInput():
+            msisdn = self.checkInput()[1]
+            db = {}
+            found = 0
+        for vlr in ['8615644011', '8615644650']:
+            try:
+                db['NET'], db['LAC'], db['CID'] = self.getCID(msisdn, vlr)
+                db['VLR'] = vlr
+                found = 1
+                self.textBrowser.append(convertMessage(db))
+            except:
+                pass
+        if not found:
+            self.textBrowser.append(u'<font color=red>Not Here!</font>')
 
 
 class DHLRTelnet(object):

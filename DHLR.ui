@@ -128,8 +128,8 @@
    <widget class="QPushButton" name="btn4to3">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>80</y>
+      <x>580</x>
+      <y>50</y>
       <width>90</width>
       <height>20</height>
      </rect>
@@ -141,8 +141,8 @@
    <widget class="QPushButton" name="btn3to2">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>110</y>
+      <x>580</x>
+      <y>70</y>
       <width>90</width>
       <height>20</height>
      </rect>
@@ -161,7 +161,7 @@
     <property name="geometry">
      <rect>
       <x>670</x>
-      <y>80</y>
+      <y>50</y>
       <width>90</width>
       <height>20</height>
      </rect>
@@ -174,13 +174,49 @@
     <property name="geometry">
      <rect>
       <x>670</x>
-      <y>110</y>
+      <y>70</y>
       <width>90</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>2G -&gt; 3G</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnQueryOther">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>100</y>
+      <width>90</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>查询位置</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnNO">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>100</y>
+      <width>90</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>待定</string>
     </property>
    </widget>
   </widget>
