@@ -90,7 +90,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             except:
                 raise
 
-    def getCID(self, imsi, vlr):
+    def getCID(self, msisdn, vlr):
         if vlr == '8615644011':
             host = '192.91.141.158'
         elif vlr == '8615644650':
@@ -103,8 +103,9 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         server.read_until('ENTER PASSWORD < ')
         server.write('1Q2W3E4R\r')
         server.read_until('< ', 10)
-        server.write('MVO:IMSI=' + imsi + ';\r')
+        server.write('MVO:MSISDN=' + msisdn + ';\r')
         s = server.read_until('< ', 10)
+        server.close()
         if not re.search('FAILED', s):
             r = re.compile(('.*LOCATION AREA CODE OF IMSI \.+ (?P<LAC>[\w\/]*)'
                             '.*RADIO ACCESS INFO \.+ (?P<NET>\w*)'
@@ -241,9 +242,9 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         # To Get LAC/CID
         vlr = db['VLR']
         if vlr == '8615644011' or vlr == '8615644650':
-            imsi = db['IMSI']
+            msisdn = db['MSISDN']
             try:
-                db['NET'], db['LAC'], db['CID'] = self.getCID(imsi, vlr)
+                db['NET'], db['LAC'], db['CID'] = self.getCID(msisdn, vlr)
             except:
                 pass
 
