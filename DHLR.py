@@ -165,15 +165,15 @@ class DHLRForm(QtGui.QMainWindow, uiform):
              '.*CALLING LINE ID RESTRICTION \.+ (?P<CLIR>\w*)'
              '.*MULTI PARTY SERVICE \.* (?P<MTPY>[YN])'
              '.*SELECTIVE RINGBACK TONE \.* (?P<SRBT>[YN])'
-             '.*BARRING OF ALL MTC \.*  (?P<BAIC>[YNAD ])'
-             '.*BARRING OF ALL MOC \.*  (?P<BAOC>[YNAD ])'
-             '.*BARRING OF INTERNATIONAL MOC \.*  (?P<BOIC>[YNAD ])'
+             '.*BARRING OF ALL MTC \.*  (?P<BAIC>[YNAD ]*)'
+             '.*BARRING OF ALL MOC \.*  (?P<BAOC>[YNAD ]*)'
+             '.*BARRING OF INTERNATIONAL MOC \.*  (?P<BOIC>[YNAD ]*)'
              '.*CALL FWD UNCONDITIONAL *\.+ (?P<CFU>[\w ]*)'
              '.*CALL FWD ON SUBSCRIBER BUSY *\.+ (?P<CFB>[\w ]*)'
              '.*CALL FWD ON SUBS. NOT REACHABLE  (?P<CFNR>[\w ]*)'
              '.*CALL FWD ON NO REPLY \.+ (?P<CFNA>[\w ]*)'
              '.*OPERATOR CONTROLLED CALL FWD \.+ (?P<OCCF>[\w ]*)'
-             '.*CALL WAITING \.* (?P<CW>[YNAD ])'
+             '.*CALL WAITING \.* (?P<CW>[YNAD ]*)'
              )
         try:
             db.update(matchData(s, r))
