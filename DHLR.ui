@@ -236,6 +236,12 @@
   <tabstop>inputBox</tabstop>
   <tabstop>btnQuery</tabstop>
   <tabstop>btnLocUpd</tabstop>
+  <tabstop>btn4to3</tabstop>
+  <tabstop>btn3to2</tabstop>
+  <tabstop>btn3to4</tabstop>
+  <tabstop>btn2to3</tabstop>
+  <tabstop>btnQueryOther</tabstop>
+  <tabstop>btnNO</tabstop>
   <tabstop>textBrowser</tabstop>
  </tabstops>
  <resources/>
