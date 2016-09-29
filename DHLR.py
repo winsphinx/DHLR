@@ -9,28 +9,25 @@ import telnetlib
 from PyQt4 import QtCore, QtGui, uic
 
 uifile = os.path.join('.', 'DHLR.ui')
-jsfile = os.path.join('.', 'DHLR.cfg')
-locale = os.path.join('.', 'DHLR.json')
-with open(jsfile, 'r') as f:
-    info = json.load(f)
-host = str(info['host'])
-port = int(info['port'])
-username = str(info['username'])
-password = str(info['password'])
+config = os.path.join('.', 'DHLR.json')
+with open(config, 'r') as f:
+    cfg = json.load(f)
+host = str(cfg['HLR']['host'])
+port = int(cfg['HLR']['port'])
+username = str(cfg['HLR']['username'])
+password = str(cfg['HLR']['password'])
 
 uiform = uic.loadUiType(uifile)[0]
 
 
 def convertMessage(data):
     msg = ''
-    with open(locale, 'r') as f:
-        dict = json.load(f)
-    for k in dict['Order']:
+    for k in cfg['Order']:
         if k in data:
             if data[k] == '':
                 data[k] = 'N'
-            if k in dict['Locale']:
-                name = dict['Locale'][k]
+            if k in cfg['Locale']:
+                name = cfg['Locale'][k]
             else:
                 name = k
             msg += '<b>' + name + ':  </b>' + data[k] + '<br>'
@@ -92,12 +89,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                 raise
 
     def getCID(self, msisdn, vlr):
-        if vlr == '8615644011':
-            host = '192.91.141.158'
-        elif vlr == '8615644650':
-            host = '192.91.141.169'
-        else:
-            return
+        host = cfg['VLR'][vlr]
         server = telnetlib.Telnet(host)
         server.read_until('ENTER USERNAME < ')
         server.write('SXWGZB\r')
@@ -224,7 +216,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
              )
         try:
             db.update(matchData(s, r))
-            db['LTE'] = "UP:" + db['UP'] + ",DN:" + db['DN']
+            db['LTE'] = 'UP:' + db['UP'] + ',DN:' + db['DN']
             db.pop('DN')
             db.pop('UP')
         except:
@@ -242,7 +234,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         # To Get LAC/CID
         vlr = db['VLR']
-        if vlr == '8615644011' or vlr == '8615644650':
+        if vlr in cfg['VLR'].keys():
             msisdn = db['MSISDN']
             try:
                 db['NET'], db['LAC'], db['CID'] = self.getCID(msisdn, vlr)
@@ -338,10 +330,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
     def queryOther(self):
         self.textBrowser.clear()
         if self.checkInput():
-            msisdn = self.checkInput()[1]
+            _, msisdn = self.checkInput()
             db = {}
             found = 0
-        for vlr in ['8615644011', '8615644650']:
+        for vlr in cfg['VLR'].keys():
             try:
                 db['NET'], db['LAC'], db['CID'] = self.getCID(msisdn, vlr)
                 db['VLR'] = vlr
@@ -350,7 +342,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             except:
                 pass
         if not found:
-            self.textBrowser.append(u'<font color=red>Not Here!</font>')
+            self.textBrowser.append(u'<font color=red>没有登网/外地!</font>')
 
 
 class DHLRTelnet(object):
