@@ -201,7 +201,7 @@
      <string>查询位置</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnNO">
+   <widget class="QPushButton" name="btnCFx">
     <property name="geometry">
      <rect>
       <x>670</x>
@@ -216,7 +216,7 @@
      </font>
     </property>
     <property name="text">
-     <string>待定</string>
+     <string>呼叫转移</string>
     </property>
    </widget>
   </widget>
@@ -226,7 +226,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -241,7 +241,7 @@
   <tabstop>btn3to4</tabstop>
   <tabstop>btn2to3</tabstop>
   <tabstop>btnQueryOther</tabstop>
-  <tabstop>btnNO</tabstop>
+  <tabstop>btnCFx</tabstop>
   <tabstop>textBrowser</tabstop>
  </tabstops>
  <resources/>
