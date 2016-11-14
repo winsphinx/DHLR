@@ -218,7 +218,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
              )
         try:
             db.update(match_data(s, r))
-            db['LTE'] = 'UP:' + db['UP'] + ',DN:' + db['DN']
+            db['LTE'] = 'DN:' + db['DN'] + ',UP:' + db['UP']
             db.pop('DN')
             db.pop('UP')
         except:
