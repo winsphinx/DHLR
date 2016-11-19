@@ -9,8 +9,9 @@ import telnetlib
 from PyQt4 import QtCore, QtGui, uic
 from CFX import CFxFrame
 
-uifile = os.path.join('.', 'DHLR.ui')
-config = os.path.join('.', 'DHLR.json')
+dir = os.path.dirname(sys.argv[0])
+uifile = os.path.join(dir, 'DHLR.ui')
+config = os.path.join(dir, 'DHLR.json')
 with open(config, 'r') as f:
     cfg = json.load(f)
 host = str(cfg['HLR']['host'])
