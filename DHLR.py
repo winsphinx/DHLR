@@ -57,6 +57,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.btn3to4.clicked.connect(self.three_four)
         self.btnQueryOther.clicked.connect(self.query_other)
         self.btnCFx.clicked.connect(self.call_forward)
+        self.btnStop.clicked.connect(self.stop_num)
+        self.btnRest.clicked.connect(self.rest_num)
         self.connect(
             self.inputBox,
             QtCore.SIGNAL('returnPressed()'),
@@ -369,6 +371,44 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     self.textBrowser.append(u'<font color=red>无效用户!')
         else:
             self.textBrowser.append(u'<font color=red>无效操作!')
+
+    def stop_num(self):
+        self.textBrowser.clear()
+        try:
+            DHLR.login_dev(host, port, username, password)
+        except:
+            self.textBrowser.append(u'<font color=red>连接出错!')
+            return
+
+        if self.check_input():
+            flag, num = self.check_input()
+            try:
+                imsi = self.get_imsi(flag, num)
+                DHLR.send_cmd('ZMGC:IMSI=' + imsi + ':CBO=BAOC,CBI=BAIC;\r')
+                self.textBrowser.append(u'<font color=green>操作成功!')
+            except:
+                self.textBrowser.append(u'<font color=red>无效用户!')
+
+        DHLR.close_dev()
+
+    def rest_num(self):
+        self.textBrowser.clear()
+        try:
+            DHLR.login_dev(host, port, username, password)
+        except:
+            self.textBrowser.append(u'<font color=red>连接出错!')
+            return
+
+        if self.check_input():
+            flag, num = self.check_input()
+            try:
+                imsi = self.get_imsi(flag, num)
+                DHLR.send_cmd('ZMGD:IMSI=' + imsi + ';\r')
+                self.textBrowser.append(u'<font color=green>操作成功!')
+            except:
+                self.textBrowser.append(u'<font color=red>无效用户!')
+
+        DHLR.close_dev()
 
 
 class DHLRTelnet(object):
