@@ -300,6 +300,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
 
+        DHLR.close_dev()
+
     def three_two(self):
         self.textBrowser.clear()
         try:
@@ -316,6 +318,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
 
+        DHLR.close_dev()
+
     def two_three(self):
         self.textBrowser.clear()
         try:
@@ -331,6 +335,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                 self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
+
+        DHLR.close_dev()
 
     def query_other(self):
         self.textBrowser.clear()
@@ -371,6 +377,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     self.textBrowser.append(u'<font color=red>无效用户!')
         else:
             self.textBrowser.append(u'<font color=red>无效操作!')
+
+        DHLR.close_dev()
 
     def stop_num(self):
         self.textBrowser.clear()
