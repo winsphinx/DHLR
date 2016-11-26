@@ -11,8 +11,8 @@ from CFX import CFxFrame
 
 dir = os.path.dirname(sys.argv[0])
 uifile = os.path.join(dir, 'DHLR.ui')
-config = os.path.join(dir, 'DHLR.json')
-with open(config, 'r') as f:
+cfgfile = os.path.join(dir, 'DHLR.json')
+with open(cfgfile, 'r') as f:
     cfg = json.load(f)
 host = str(cfg['HLR']['host'])
 port = int(cfg['HLR']['port'])
@@ -70,7 +70,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             try:
                 return r.search(s).group()
             except:
-                raise
+                pass
 
     def get_cid(self, msisdn, vlr):
         host = cfg['VLR'][vlr]
@@ -95,13 +95,11 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             if cid != 'N':
                 cid = cid.split('/')[1][:-1]
             return (net, lac, cid)
-        else:
-            raise
 
     def query_user(self):
         self.textBrowser.clear()
         try:
-            self.login_dev(host, port, username, password)
+            self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -231,7 +229,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
     def update_location(self):
         self.textBrowser.clear()
         try:
-            self.login_dev(host, port, username, password)
+            self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -250,7 +248,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
     def four_three(self):
         self.textBrowser.clear()
         try:
-            self.login_dev(host, port, username, password)
+            self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -266,7 +264,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
     def three_four(self):
         self.textBrowser.clear()
         try:
-            self.login_dev(host, port, username, password)
+            self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -284,7 +282,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
     def three_two(self):
         self.textBrowser.clear()
         try:
-            self.login_dev(host, port, username, password)
+            self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -302,7 +300,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
     def two_three(self):
         self.textBrowser.clear()
         try:
-            self.login_dev(host, port, username, password)
+            self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -341,7 +339,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.textBrowser.clear()
         if ft and fn:
             try:
-                self.login_dev(host, port, username, password)
+                self.login_dev(cfg['HLR'])
             except:
                 self.textBrowser.append(u'<font color=red>连接出错!')
                 return
@@ -362,7 +360,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
     def stop_num(self):
         self.textBrowser.clear()
         try:
-            self.login_dev(host, port, username, password)
+            self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -381,7 +379,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
     def rest_num(self):
         self.textBrowser.clear()
         try:
-            self.login_dev(host, port, username, password)
+            self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -397,7 +395,11 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         self.close_dev()
 
-    def login_dev(self, host, port, username, password):
+    def login_dev(self, device):
+        host = str(device['host'])
+        port = int(device['port'])
+        username = str(device['username'])
+        password = str(device['password'])
         try:
             self.telnet.open(host, port)
             self.telnet.read_until('ENTER USERNAME < ')
@@ -406,7 +408,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.telnet.write(password + '\r')
             self.telnet.read_until('< ', 10)
         except:
-            raise
+            pass
 
     def close_dev(self):
         self.telnet.close()
@@ -433,7 +435,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         try:
             return r.match(data).groupdict()
         except:
-            raise
+            pass
+
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
