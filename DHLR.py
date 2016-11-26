@@ -22,33 +22,12 @@ password = str(cfg['HLR']['password'])
 uiform = uic.loadUiType(uifile)[0]
 
 
-def convert_msg(data):
-    msg = ''
-    for k in cfg['Order']:
-        if k in data:
-            if data[k] == '':
-                data[k] = 'N'
-            if k in cfg['Locale']:
-                name = cfg['Locale'][k]
-            else:
-                name = k
-            msg += '<b>' + name + ':  </b>' + data[k] + '<br>'
-    return msg
-
-
-def match_data(data, pattern):
-    r = re.compile(pattern, re.S)
-    try:
-        return r.match(data).groupdict()
-    except:
-        raise
-
-
 class DHLRForm(QtGui.QMainWindow, uiform):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, telnet=telnetlib.Telnet()):
         QtGui.QMainWindow.__init__(self, parent)
         self.setupUi(self)
+        self.telnet = telnet
         self.btnQuery.clicked.connect(self.query_user)
         self.btnLocUpd.clicked.connect(self.update_location)
         self.btn4to3.clicked.connect(self.four_three)
@@ -85,7 +64,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         else:
             return
 
-        s = DHLR.send_cmd(cmd)
+        s = self.send_cmd(cmd)
         if not re.search('FAILED', s):
             r = re.compile('(\d{15})', re.S)
             try:
@@ -122,7 +101,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
     def query_user(self):
         self.textBrowser.clear()
         try:
-            DHLR.login_dev(host, port, username, password)
+            self.login_dev(host, port, username, password)
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -137,7 +116,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             return
 
         # To get ZMIO
-        s = DHLR.send_cmd(cmd)
+        s = self.send_cmd(cmd)
         r = ('.*INTERNATIONAL MOBILE SUBSCRIBER IDENTITY \.+ (?P<IMSI>\d{15})'
              '.*MOBILE STATION ISDN NUMBER \.+ (?P<MSISDN>\d{13})'
              '.*SERVICE AREA OF MSISDN \.+ (?P<SAM>\w{3})'
@@ -148,15 +127,15 @@ class DHLRForm(QtGui.QMainWindow, uiform):
              '.*LATEST LOCATION UPDATE\s+(?P<VLRT>[T0-9\:\+\-\.]*)'
              )
         try:
-            db = match_data(s, r)
+            db = self.match_data(s, r)
         except:
             self.textBrowser.clear()
             self.textBrowser.append(u'<font color=red>无效用户!')
-            DHLR.close_dev()
+            self.close_dev()
             return
 
         # To get ZMSO
-        s = DHLR.send_cmd('ZMSO:IMSI=' + db['IMSI'] + ':BSERV=T11;\r')
+        s = self.send_cmd('ZMSO:IMSI=' + db['IMSI'] + ':BSERV=T11;\r')
         r = ('.*CALL HOLD \.+ (?P<HOLD>[YN])'
              '.*CALLING LINE ID PRESENTATION \.+ (?P<CLIP>[YNO])'
              '.*CALLING LINE ID RESTRICTION \.+ (?P<CLIR>\w*)'
@@ -173,20 +152,20 @@ class DHLRForm(QtGui.QMainWindow, uiform):
              '.*CALL WAITING \.* (?P<CW>[YNAD ]*)'
              )
         try:
-            db.update(match_data(s, r))
+            db.update(self.match_data(s, r))
         except:
             pass
 
         # To get ZMQO
-        s = DHLR.send_cmd('ZMQO:IMSI=' + db['IMSI'] + ':DISP=CA;\r')
+        s = self.send_cmd('ZMQO:IMSI=' + db['IMSI'] + ':DISP=CA;\r')
         r = ('.*SERVICE CONTROL POINT ADDRESS\.+(?P<SCP>\d{10})')
         try:
-            db.update(match_data(s, r))
+            db.update(self.match_data(s, r))
         except:
             db['SCP'] = 'N'
 
         # To Get ZMBO
-        s = DHLR.send_cmd('ZMBO:IMSI=' + db['IMSI'] + ';\r')
+        s = self.send_cmd('ZMBO:IMSI=' + db['IMSI'] + ';\r')
         r = re.compile(('([\w]{3}),000'), re.S | re.M)
         try:
             db['SERV'] = ','.join(r.findall(s))
@@ -194,12 +173,12 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             pass
 
         # To get ZMNO
-        s = DHLR.send_cmd('ZMNO:IMSI=' + db['IMSI'] + ';\r')
+        s = self.send_cmd('ZMNO:IMSI=' + db['IMSI'] + ';\r')
         r = ('.*SGSN ADDRESS \.+ (?P<SGSN>\d*)'
              '.*NETWORK ACCESS \.+ (?P<NWACC>\w*)'
              )
         try:
-            db.update(match_data(s, r))
+            db.update(self.match_data(s, r))
         except:
             pass
         r = re.compile(('.*?QUALITY OF SERVICES PROFILE . (\d+)'
@@ -212,7 +191,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             db['QOS'] = 'N'
 
         # To Get ZMNF
-        s = DHLR.send_cmd('ZMNF:IMSI=' + db['IMSI'] + ';\r')
+        s = self.send_cmd('ZMNF:IMSI=' + db['IMSI'] + ';\r')
         r = ('.*EPS STATUS \.+ (?P<EPS>\w*)'
              '.*MME ADDRESS PRESENT\.+ (?P<MME>[YN])'
              '.*AMBR DOWNLINK \.+ (?P<DN>\d*)'
@@ -220,7 +199,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
              '.*LATEST LTE LOCATION UPDATE .. (?P<LTET>[T0-9\:\+\-\.]*)'
              )
         try:
-            db.update(match_data(s, r))
+            db.update(self.match_data(s, r))
             db['LTE'] = 'DN:' + db['DN'] + ',UP:' + db['UP']
             db.pop('DN')
             db.pop('UP')
@@ -228,12 +207,12 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             pass
 
         # To Get ZMGO
-        s = DHLR.send_cmd('ZMGO:IMSI=' + db['IMSI'] + ';\r')
+        s = self.send_cmd('ZMGO:IMSI=' + db['IMSI'] + ';\r')
         r = ('.*BAOC ... BARRING OF ALL OUTGOING CALLS \.+ (?P<BAOCODB>[YN])'
              '.*BAIC ... BARRING OF ALL INCOMING CALLS \.+ (?P<BAICODB>[YN])'
              )
         try:
-            db.update(match_data(s, r))
+            db.update(self.match_data(s, r))
         except:
             pass
 
@@ -246,13 +225,13 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             except:
                 pass
 
-        self.textBrowser.append(convert_msg(db))
-        DHLR.close_dev()
+        self.textBrowser.append(self.convert_msg(db))
+        self.close_dev()
 
     def update_location(self):
         self.textBrowser.clear()
         try:
-            DHLR.login_dev(host, port, username, password)
+            self.login_dev(host, port, username, password)
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -261,17 +240,17 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             flag, num = self.check_input()
             try:
                 imsi = self.get_imsi(flag, num)
-                DHLR.send_cmd('ZMIM:IMSI=' + imsi + ':VLR=N;\r')
+                self.send_cmd('ZMIM:IMSI=' + imsi + ':VLR=N;\r')
                 self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
 
-        DHLR.close_dev()
+        self.close_dev()
 
     def four_three(self):
         self.textBrowser.clear()
         try:
-            DHLR.login_dev(host, port, username, password)
+            self.login_dev(host, port, username, password)
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -279,7 +258,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             flag, num = self.check_input()
             try:
                 imsi = self.get_imsi(flag, num)
-                DHLR.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=DENIED;\r')
+                self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=DENIED;\r')
                 self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
@@ -287,7 +266,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
     def three_four(self):
         self.textBrowser.clear()
         try:
-            DHLR.login_dev(host, port, username, password)
+            self.login_dev(host, port, username, password)
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -295,17 +274,17 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             flag, num = self.check_input()
             try:
                 imsi = self.get_imsi(flag, num)
-                DHLR.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=GRANTED;\r')
+                self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=GRANTED;\r')
                 self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
 
-        DHLR.close_dev()
+        self.close_dev()
 
     def three_two(self):
         self.textBrowser.clear()
         try:
-            DHLR.login_dev(host, port, username, password)
+            self.login_dev(host, port, username, password)
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -313,17 +292,17 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             flag, num = self.check_input()
             try:
                 imsi = self.get_imsi(flag, num)
-                DHLR.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=Y;\r')
+                self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=Y;\r')
                 self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
 
-        DHLR.close_dev()
+        self.close_dev()
 
     def two_three(self):
         self.textBrowser.clear()
         try:
-            DHLR.login_dev(host, port, username, password)
+            self.login_dev(host, port, username, password)
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -331,12 +310,12 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             flag, num = self.check_input()
             try:
                 imsi = self.get_imsi(flag, num)
-                DHLR.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=N;\r')
+                self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=N;\r')
                 self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
 
-        DHLR.close_dev()
+        self.close_dev()
 
     def query_other(self):
         self.textBrowser.clear()
@@ -349,7 +328,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                 db['NET'], db['LAC'], db['CID'] = self.get_cid(msisdn, vlr)
                 db['VLR'] = vlr
                 found = 1
-                self.textBrowser.append(convert_msg(db))
+                self.textBrowser.append(self.convert_msg(db))
             except:
                 pass
         if not found:
@@ -362,7 +341,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.textBrowser.clear()
         if ft and fn:
             try:
-                DHLR.login_dev(host, port, username, password)
+                self.login_dev(host, port, username, password)
             except:
                 self.textBrowser.append(u'<font color=red>连接出错!')
                 return
@@ -371,19 +350,19 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                 try:
                     imsi = self.get_imsi(flag, num)
                     cmd = 'ZMSS:IMSI=' + imsi + ':' + ft + '=' + fn + ';\r'
-                    DHLR.send_cmd(cmd)
+                    self.send_cmd(cmd)
                     self.textBrowser.append(u'<font color=green>操作成功!')
                 except:
                     self.textBrowser.append(u'<font color=red>无效用户!')
         else:
             self.textBrowser.append(u'<font color=red>无效操作!')
 
-        DHLR.close_dev()
+        self.close_dev()
 
     def stop_num(self):
         self.textBrowser.clear()
         try:
-            DHLR.login_dev(host, port, username, password)
+            self.login_dev(host, port, username, password)
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -392,17 +371,17 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             flag, num = self.check_input()
             try:
                 imsi = self.get_imsi(flag, num)
-                DHLR.send_cmd('ZMGC:IMSI=' + imsi + ':CBO=BAOC,CBI=BAIC;\r')
+                self.send_cmd('ZMGC:IMSI=' + imsi + ':CBO=BAOC,CBI=BAIC;\r')
                 self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
 
-        DHLR.close_dev()
+        self.close_dev()
 
     def rest_num(self):
         self.textBrowser.clear()
         try:
-            DHLR.login_dev(host, port, username, password)
+            self.login_dev(host, port, username, password)
         except:
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
@@ -411,18 +390,12 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             flag, num = self.check_input()
             try:
                 imsi = self.get_imsi(flag, num)
-                DHLR.send_cmd('ZMGD:IMSI=' + imsi + ';\r')
+                self.send_cmd('ZMGD:IMSI=' + imsi + ';\r')
                 self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
 
-        DHLR.close_dev()
-
-
-class DHLRTelnet(object):
-
-    def __init__(self, telnet=telnetlib.Telnet()):
-        self.telnet = telnet
+        self.close_dev()
 
     def login_dev(self, host, port, username, password):
         try:
@@ -442,10 +415,28 @@ class DHLRTelnet(object):
         self.telnet.write(cmd)
         return self.telnet.read_until('< ', 10)
 
+    def convert_msg(self, data):
+        msg = ''
+        for k in cfg['Order']:
+            if k in data:
+                if data[k] == '':
+                    data[k] = 'N'
+                if k in cfg['Locale']:
+                    name = cfg['Locale'][k]
+                else:
+                    name = k
+                msg += '<b>' + name + ':  </b>' + data[k] + '<br>'
+        return msg
+
+    def match_data(self, data, pattern):
+        r = re.compile(pattern, re.S)
+        try:
+            return r.match(data).groupdict()
+        except:
+            raise
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    DHLR = DHLRTelnet()
     DHLRWin = DHLRForm()
     DHLRWin.show()
     app.exec_()
