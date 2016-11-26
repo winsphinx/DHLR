@@ -9,17 +9,12 @@ import telnetlib
 from PyQt4 import QtCore, QtGui, uic
 from CFX import CFxFrame
 
-dir = os.path.dirname(sys.argv[0])
-uifile = os.path.join(dir, 'DHLR.ui')
-cfgfile = os.path.join(dir, 'DHLR.json')
+path = os.path.dirname(sys.argv[0])
+uifile = os.path.join(path, 'DHLR.ui')
+uiform = uic.loadUiType(uifile)[0]
+cfgfile = os.path.join(path, 'DHLR.json')
 with open(cfgfile, 'r') as f:
     cfg = json.load(f)
-host = str(cfg['HLR']['host'])
-port = int(cfg['HLR']['port'])
-username = str(cfg['HLR']['username'])
-password = str(cfg['HLR']['password'])
-
-uiform = uic.loadUiType(uifile)[0]
 
 
 class DHLRForm(QtGui.QMainWindow, uiform):
