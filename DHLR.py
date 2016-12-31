@@ -81,15 +81,16 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         if not re.search('FAILED', s):
             r = re.compile(('.*LOCATION AREA CODE OF IMSI \.+ (?P<LAC>[\w\/]*)'
                             '.*RADIO ACCESS INFO \.+ (?P<NET>\w*)'
+                            '.*LAST ACTIVATE DATE \.+ (?P<TIME>[\d\:\- ]*)'
                             '.*LAST USED CELL ID \.+ (?P<CID>[\w\/]*)'),
                            re.S
                            )
-            lac, net, cid = r.match(s).groups()
+            lac, net, time, cid = r.match(s).groups()
             if lac != 'N':
                 lac = lac.split('/')[1][:-1]
             if cid != 'N':
                 cid = cid.split('/')[1][:-1]
-            return (net, lac, cid)
+            return (net, lac, cid, time)
 
     def query_user(self):
         self.textBrowser.clear()
@@ -215,7 +216,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         if vlr in cfg['VLR'].keys():
             msisdn = db['MSISDN']
             try:
-                db['NET'], db['LAC'], db['CID'] = self.get_cid(msisdn, vlr)
+                db['NET'], db['LAC'], db['CID'], _ = self.get_cid(msisdn, vlr)
             except:
                 pass
 
@@ -326,8 +327,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             found = 0
         for vlr in cfg['VLR'].keys():
             try:
-                db['NET'], db['LAC'], db['CID'] = self.get_cid(msisdn, vlr)
                 db['VLR'] = vlr
+                db['NET'], db['LAC'], db['CID'], db['TIME'] = self.get_cid(msisdn, vlr)
             except:
                 pass
             else:
