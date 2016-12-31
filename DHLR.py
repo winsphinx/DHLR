@@ -193,11 +193,12 @@ class DHLRForm(QtGui.QMainWindow, uiform):
              )
         try:
             db.update(self.match_data(s, r))
+        except:
+            pass
+        else:
             db['LTE'] = 'DN:' + db['DN'] + ',UP:' + db['UP']
             db.pop('DN')
             db.pop('UP')
-        except:
-            pass
 
         # To Get ZMGO
         s = self.send_cmd('ZMGO:IMSI=' + db['IMSI'] + ';\r')
@@ -234,9 +235,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             try:
                 imsi = self.get_imsi(flag, num)
                 self.send_cmd('ZMIM:IMSI=' + imsi + ':VLR=N;\r')
-                self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
+            else:
+                self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -252,9 +254,12 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             try:
                 imsi = self.get_imsi(flag, num)
                 self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=DENIED;\r')
-                self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
+            else:
+                self.textBrowser.append(u'<font color=green>操作成功!')
+
+        self.close_dev()
 
     def three_four(self):
         self.textBrowser.clear()
@@ -268,9 +273,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             try:
                 imsi = self.get_imsi(flag, num)
                 self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=GRANTED;\r')
-                self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
+            else:
+                self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -286,9 +292,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             try:
                 imsi = self.get_imsi(flag, num)
                 self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=Y;\r')
-                self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
+            else:
+                self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -304,9 +311,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             try:
                 imsi = self.get_imsi(flag, num)
                 self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=N;\r')
-                self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
+            else:
+                self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -320,10 +328,11 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             try:
                 db['NET'], db['LAC'], db['CID'] = self.get_cid(msisdn, vlr)
                 db['VLR'] = vlr
-                found = 1
-                self.textBrowser.append(self.convert_msg(db))
             except:
                 pass
+            else:
+                found = 1
+                self.textBrowser.append(self.convert_msg(db))
         if not found:
             self.textBrowser.append(u'<font color=red>没有登网/外地!')
 
@@ -344,9 +353,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     imsi = self.get_imsi(flag, num)
                     cmd = 'ZMSS:IMSI=' + imsi + ':' + ft + '=' + fn + ';\r'
                     self.send_cmd(cmd)
-                    self.textBrowser.append(u'<font color=green>操作成功!')
                 except:
                     self.textBrowser.append(u'<font color=red>无效用户!')
+                else:
+                    self.textBrowser.append(u'<font color=green>操作成功!')
         else:
             self.textBrowser.append(u'<font color=red>无效操作!')
 
@@ -365,9 +375,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             try:
                 imsi = self.get_imsi(flag, num)
                 self.send_cmd('ZMGC:IMSI=' + imsi + ':CBO=BAOC,CBI=BAIC;\r')
-                self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
+            else:
+                self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -384,9 +395,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             try:
                 imsi = self.get_imsi(flag, num)
                 self.send_cmd('ZMGD:IMSI=' + imsi + ';\r')
-                self.textBrowser.append(u'<font color=green>操作成功!')
             except:
                 self.textBrowser.append(u'<font color=red>无效用户!')
+            else:
+                self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
