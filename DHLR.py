@@ -328,7 +328,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         for vlr in cfg['VLR'].keys():
             try:
                 db['VLR'] = vlr
-                db['NET'], db['LAC'], db['CID'], db['TIME'] = self.get_cid(msisdn, vlr)
+                db['NET'], db['LAC'], db['CID'], db['TIME'] = \
+                    self.get_cid(msisdn, vlr)
             except:
                 pass
             else:
@@ -431,10 +432,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             if k in data:
                 if data[k] == '':
                     data[k] = 'N'
-                if k in cfg['Locale']:
-                    name = cfg['Locale'][k]
-                else:
-                    name = k
+                name = cfg['Locale'].get(k, k)
                 msg += '<b>' + name + ':  </b>' + data[k] + '<br>'
         return msg
 
