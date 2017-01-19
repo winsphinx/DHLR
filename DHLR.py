@@ -65,7 +65,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             try:
                 return r.search(s).group()
             except:
-                pass
+                raise
 
     def get_cid(self, msisdn, vlr):
         host = cfg['VLR'][vlr]
@@ -417,7 +417,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.telnet.write(password + '\r')
             self.telnet.read_until('< ', 10)
         except:
-            pass
+            raise
 
     def close_dev(self):
         self.telnet.close()
@@ -441,7 +441,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         try:
             return r.match(data).groupdict()
         except:
-            pass
+            raise
 
 
 if __name__ == '__main__':
