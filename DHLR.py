@@ -67,7 +67,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             except:
                 raise
 
-    def get_cid(self, msisdn, vlr):
+    def get_vlr_info(self, msisdn, vlr):
         host = cfg['VLR'][vlr]
         server = telnetlib.Telnet(host)
         server.read_until('ENTER USERNAME < ')
@@ -75,22 +75,25 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         server.read_until('ENTER PASSWORD < ')
         server.write('1Q2W3E4R\r')
         server.read_until('< ', 10)
-        server.write('MVO:MSISDN=' + msisdn + ';\r')
+        server.write('ZMVO:MSISDN=' + msisdn + ';\r')
         s = server.read_until('< ', 10)
+        server.write('ZMWI:MSISDN=' + msisdn + ';\r')
+        s += server.read_until('< ', 10)
         server.close()
         if not re.search('FAILED', s):
             r = re.compile(('.*LOCATION AREA CODE OF IMSI \.+ (?P<LAC>[\w\/]*)'
                             '.*RADIO ACCESS INFO \.+ (?P<NET>\w*)'
                             '.*LAST ACTIVATE DATE \.+ (?P<TIME>[\d\:\- ]*)'
-                            '.*LAST USED CELL ID \.+ (?P<CID>[\w\/]*)'),
+                            '.*LAST USED CELL ID \.+ (?P<CID>[\w\/]*)'
+                            '.*INTERNATIONAL MOBILE STATION EQUIPMENT IDENTITY \.+ (?P<IMEI>\d{14})'),
                            re.S
                            )
-            lac, net, time, cid = r.match(s).groups()
+            lac, net, time, cid, imei = r.match(s).groups()
             if lac != 'N':
                 lac = lac.split('/')[1][:-1]
             if cid != 'N':
                 cid = cid.split('/')[1][:-1]
-            return (net, lac, cid, time)
+            return (net, lac, cid, time, imei)
 
     def query_user(self):
         self.textBrowser.clear()
@@ -216,7 +219,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         if vlr in cfg['VLR'].keys():
             msisdn = db['MSISDN']
             try:
-                db['NET'], db['LAC'], db['CID'], _ = self.get_cid(msisdn, vlr)
+                db['NET'], db['LAC'], db['CID'], db['TIME'], db['IMEI'] = self.get_vlr_info(msisdn, vlr)
             except:
                 pass
 
@@ -328,8 +331,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         for vlr in cfg['VLR'].keys():
             try:
                 db['VLR'] = vlr
-                db['NET'], db['LAC'], db['CID'], db['TIME'] = \
-                    self.get_cid(msisdn, vlr)
+                db['NET'], db['LAC'], db['CID'], db['TIME'], db['IMEI'] = self.get_vlr_info(msisdn, vlr)
             except:
                 pass
             else:
