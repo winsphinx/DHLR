@@ -232,6 +232,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         try:
             self.login_dev(cfg['HLR'])
         except:
+            self.textBrowser.clear()
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
 
@@ -255,8 +256,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         try:
             self.login_dev(cfg['HLR'])
         except:
+            self.textBrowser.clear()
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
+
         if self.check_input():
             flag, num = self.check_input()
             if not Confirm('确认对 ' + num + ' 做降网?').comfirmed:
@@ -277,8 +280,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         try:
             self.login_dev(cfg['HLR'])
         except:
+            self.textBrowser.clear()
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
+
         if self.check_input():
             flag, num = self.check_input()
             if not Confirm('确认对 ' + num + ' 做升网?').comfirmed:
@@ -299,8 +304,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         try:
             self.login_dev(cfg['HLR'])
         except:
+            self.textBrowser.clear()
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
+
         if self.check_input():
             flag, num = self.check_input()
             if not Confirm('确认对 ' + num + ' 做降网?').comfirmed:
@@ -321,8 +328,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         try:
             self.login_dev(cfg['HLR'])
         except:
+            self.textBrowser.clear()
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
+
         if self.check_input():
             flag, num = self.check_input()
             if not Confirm('确认对 ' + num + ' 做升网?').comfirmed:
@@ -359,30 +368,30 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.textBrowser.append(u'<font color=red>没有位置信息!')
 
     def call_forward(self):
-        f = CFxFrame()
-        fn = f.cfx_num
-        ft = f.cfx_type
-        if ft and fn:
+        try:
+            self.login_dev(cfg['HLR'])
+        except:
+            self.textBrowser.clear()
+            self.textBrowser.append(u'<font color=red>连接出错!')
+            return
+
+        if self.check_input():
+            flag, num = self.check_input()
             try:
-                self.login_dev(cfg['HLR'])
+                imsi = self.get_imsi(flag, num)
             except:
-                self.textBrowser.append(u'<font color=red>连接出错!')
-                return
-            if self.check_input():
-                flag, num = self.check_input()
-                try:
-                    imsi = self.get_imsi(flag, num)
-                    cmd = 'ZMSS:IMSI=' + imsi + ':' + ft + '=' + fn + ';\r'
+                self.textBrowser.clear()
+                self.textBrowser.append(u'<font color=red>无效用户!')
+            else:
+                f = CFxFrame()
+                if f.cfx_type and f.cfx_num:
+                    cmd = 'ZMSS:IMSI=' + imsi + ':' + f.cfx_type + '=' + f.cfx_num + ';\r'
                     self.send_cmd(cmd)
-                except:
-                    self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=red>无效用户!')
-                else:
                     self.textBrowser.clear()
                     self.textBrowser.append(u'<font color=green>操作成功!')
-        else:
-            self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>无效操作!')
+                else:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=red>无效操作!')
 
         self.close_dev()
 
@@ -390,6 +399,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         try:
             self.login_dev(cfg['HLR'])
         except:
+            self.textBrowser.clear()
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
 
@@ -413,6 +423,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         try:
             self.login_dev(cfg['HLR'])
         except:
+            self.textBrowser.clear()
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
 
@@ -500,7 +511,6 @@ class CFxFrame(object):
             return False
 
     def ok_clicked(self):
-        # self.num.config(state=T.NORMAL)
         n = self.num.get().strip() or 'E'
         v = self.var.get().strip()
         if not self.num_validated(n):
