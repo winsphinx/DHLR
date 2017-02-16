@@ -505,10 +505,7 @@ class CFxFrame(object):
         self.frame.mainloop()
 
     def num_validated(self, num):
-        if num.isdigit() and num.startswith('86') or num == 'E':
-            return True
-        else:
-            return False
+        return (num.isdigit() and num.startswith('86') or num == 'E')
 
     def ok_clicked(self):
         n = self.num.get().strip() or 'E'
