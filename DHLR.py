@@ -207,6 +207,14 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             db.pop('DN')
             db.pop('UP')
 
+        # To Get ZMNI
+        s = self.send_cmd('ZMNI:IMSI=' + db['IMSI'] + ';\r')
+        r = re.compile(('.*?AP NAME \.+ ([\w\.]*)'), re.S | re.M)
+        try:
+            db['AP4'] = ','.join([i for i in r.findall(s)])
+        except:
+            db['AP4'] = 'N'
+
         # To Get ZMGO
         s = self.send_cmd('ZMGO:IMSI=' + db['IMSI'] + ';\r')
         r = ('.*BAOC ... BARRING OF ALL OUTGOING CALLS \.+ (?P<BAOCODB>[YN])'
