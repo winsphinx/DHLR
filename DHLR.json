@@ -48,6 +48,7 @@
         "SGSN",
         "EPS",
         "LTE",
+        "AP4",
         "MME",
         "LTET",
         "SCP"
@@ -88,6 +89,7 @@
         "SGSN":       "SGSN地址",
         "EPS":        "<a href=# title='GRANTED=开通\nDENIED=未开通'>4G功能</a>",
         "LTE":        "4G速率",
+        "AP4":        "4G接入点",
         "MME":        "4G登网",
         "LTET":       "4G最后时间",
         "SCP":        "<a href=# title='8613090461=OCS预付费用户\n8613090366=VPN普通虚拟网\nN=非智能网用户'>SCP地址</a>"
