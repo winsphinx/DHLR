@@ -23,6 +23,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
     def __init__(self, parent=None, telnet=telnetlib.Telnet()):
         QtGui.QMainWindow.__init__(self, parent)
         self.setupUi(self)
+        self.statusBar().showMessage(' Ready')
         self.telnet = telnet
         self.btnQuery.clicked.connect(self.query_user)
         self.btnLocUpd.clicked.connect(self.update_location)
@@ -67,6 +68,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                 raise
 
     def get_vlr_info(self, msisdn, vlr):
+        self.statusBar().showMessage(' Connected!')
         host = cfg['VLR'][vlr]
         server = telnetlib.Telnet(host)
         server.read_until('ENTER USERNAME < ')
@@ -79,6 +81,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         server.write('ZMWI:MSISDN=' + msisdn + ';\r')
         s += server.read_until('< ', 10)
         server.close()
+        self.statusBar().showMessage(' Disconnected')
         if not re.search('FAILED', s):
             r = re.compile((
                 '.*LOCATION AREA CODE OF IMSI \.+ (?P<LAC>[\w\/]*)'
@@ -110,6 +113,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             elif flag == 'I':
                 cmd = 'ZMIO:IMSI=' + num + ';\r'
         else:
+            self.close_dev()
             return
 
         # To get ZMIO
@@ -438,6 +442,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.close_dev()
 
     def login_dev(self, device):
+        self.statusBar().showMessage(' Connecting...')
         host = str(device['host'])
         port = int(device['port'])
         username = str(device['username'])
@@ -449,11 +454,14 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.telnet.read_until('ENTER PASSWORD < ')
             self.telnet.write(password + '\r')
             self.telnet.read_until('< ', 10)
+            self.statusBar().showMessage(' Connected!')
         except:
+            self.statusBar().showMessage(' Connect failed!')
             raise
 
     def close_dev(self):
         self.telnet.close()
+        self.statusBar().showMessage(' Disconnected')
 
     def send_cmd(self, cmd):
         self.telnet.write(cmd)
