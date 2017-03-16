@@ -238,17 +238,16 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         if self.check_input():
             flag, num = self.check_input()
-            if not Confirm('确认对 ' + num + ' 做位置更新?').comfirmed:
-                return
-            try:
-                imsi = self.get_imsi(flag, num)
-                self.send_cmd('ZMIM:IMSI=' + imsi + ':VLR=N;\r')
-            except:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=red>无效用户!')
-            else:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=green>操作成功!')
+            if Confirm('确认对 ' + num + ' 做位置更新?').comfirmed:
+                try:
+                    imsi = self.get_imsi(flag, num)
+                    self.send_cmd('ZMIM:IMSI=' + imsi + ':VLR=N;\r')
+                except:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=red>无效用户!')
+                else:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -262,17 +261,16 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         if self.check_input():
             flag, num = self.check_input()
-            if not Confirm('确认对 ' + num + ' 做降网?').comfirmed:
-                return
-            try:
-                imsi = self.get_imsi(flag, num)
-                self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=DENIED;\r')
-            except:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=red>无效用户!')
-            else:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=green>操作成功!')
+            if Confirm('确认对 ' + num + ' 做降网?').comfirmed:
+                try:
+                    imsi = self.get_imsi(flag, num)
+                    self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=DENIED;\r')
+                except:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=red>无效用户!')
+                else:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -286,17 +284,16 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         if self.check_input():
             flag, num = self.check_input()
-            if not Confirm('确认对 ' + num + ' 做升网?').comfirmed:
-                return
-            try:
-                imsi = self.get_imsi(flag, num)
-                self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=GRANTED;\r')
-            except:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=red>无效用户!')
-            else:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=green>操作成功!')
+            if Confirm('确认对 ' + num + ' 做升网?').comfirmed:
+                try:
+                    imsi = self.get_imsi(flag, num)
+                    self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=GRANTED;\r')
+                except:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=red>无效用户!')
+                else:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -310,17 +307,16 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         if self.check_input():
             flag, num = self.check_input()
-            if not Confirm('确认对 ' + num + ' 做降网?').comfirmed:
-                return
-            try:
-                imsi = self.get_imsi(flag, num)
-                self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=Y;\r')
-            except:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=red>无效用户!')
-            else:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=green>操作成功!')
+            if Confirm('确认对 ' + num + ' 做降网?').comfirmed:
+                try:
+                    imsi = self.get_imsi(flag, num)
+                    self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=Y;\r')
+                except:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=red>无效用户!')
+                else:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -334,17 +330,16 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         if self.check_input():
             flag, num = self.check_input()
-            if not Confirm('确认对 ' + num + ' 做升网?').comfirmed:
-                return
-            try:
-                imsi = self.get_imsi(flag, num)
-                self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=N;\r')
-            except:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=red>无效用户!')
-            else:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=green>操作成功!')
+            if Confirm('确认对 ' + num + ' 做升网?').comfirmed:
+                try:
+                    imsi = self.get_imsi(flag, num)
+                    self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=N;\r')
+                except:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=red>无效用户!')
+                else:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -406,17 +401,16 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         if self.check_input():
             flag, num = self.check_input()
-            if not Confirm('确认对 ' + num + ' 做停机?').comfirmed:
-                return
-            try:
-                imsi = self.get_imsi(flag, num)
-                self.send_cmd('ZMGC:IMSI=' + imsi + ':CBO=BAOC,CBI=BAIC;\r')
-            except:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=red>无效用户!')
-            else:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=green>操作成功!')
+            if Confirm('确认对 ' + num + ' 做停机?').comfirmed:
+                try:
+                    imsi = self.get_imsi(flag, num)
+                    self.send_cmd('ZMGC:IMSI=' + imsi + ':CBO=BAOC,CBI=BAIC;\r')
+                except:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=red>无效用户!')
+                else:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -430,17 +424,16 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         if self.check_input():
             flag, num = self.check_input()
-            if not Confirm('确认对 ' + num + ' 做复机?').comfirmed:
-                return
-            try:
-                imsi = self.get_imsi(flag, num)
-                self.send_cmd('ZMGD:IMSI=' + imsi + ';\r')
-            except:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=red>无效用户!')
-            else:
-                self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=green>操作成功!')
+            if Confirm('确认对 ' + num + ' 做复机?').comfirmed:
+                try:
+                    imsi = self.get_imsi(flag, num)
+                    self.send_cmd('ZMGD:IMSI=' + imsi + ';\r')
+                except:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=red>无效用户!')
+                else:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=green>操作成功!')
 
         self.close_dev()
 
