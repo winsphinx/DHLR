@@ -10,7 +10,6 @@ import Tkinter as T
 import tkMessageBox
 from PyQt4 import QtCore, QtGui, uic
 
-
 path = os.path.dirname(sys.argv[0])
 uifile = os.path.join(path, 'DHLR.ui')
 uiform = uic.loadUiType(uifile)[0]
@@ -35,10 +34,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.btnCFx.clicked.connect(self.call_forward)
         self.btnStop.clicked.connect(self.stop_num)
         self.btnRest.clicked.connect(self.rest_num)
-        self.connect(
-            self.inputBox,
-            QtCore.SIGNAL('returnPressed()'),
-            self.query_user)
+        self.connect(self.inputBox,
+                     QtCore.SIGNAL('returnPressed()'), self.query_user)
 
     def check_input(self):
         num = str(self.inputBox.text()).strip()
@@ -83,14 +80,14 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         s += server.read_until('< ', 10)
         server.close()
         if not re.search('FAILED', s):
-            r = re.compile(('.*LOCATION AREA CODE OF IMSI \.+ (?P<LAC>[\w\/]*)'
-                            '.*RADIO ACCESS INFO \.+ (?P<NET>\w*)'
-                            '.*IMSI DETACH FLAG \.+ (?P<DEA>[YN])'
-                            '.*LAST ACTIVATE DATE \.+ (?P<TIME>[\d\:\- ]*)'
-                            '.*LAST USED CELL ID \.+ (?P<CID>[\w\/]*)'
-                            '.*INTERNATIONAL MOBILE STATION EQUIPMENT IDENTITY \.+ (?P<IMEI>\d{14})'),
-                           re.S
-                           )
+            r = re.compile((
+                '.*LOCATION AREA CODE OF IMSI \.+ (?P<LAC>[\w\/]*)'
+                '.*RADIO ACCESS INFO \.+ (?P<NET>\w*)'
+                '.*IMSI DETACH FLAG \.+ (?P<DEA>[YN])'
+                '.*LAST ACTIVATE DATE \.+ (?P<TIME>[\d\:\- ]*)'
+                '.*LAST USED CELL ID \.+ (?P<CID>[\w\/]*)'
+                '.*INTERNATIONAL MOBILE STATION EQUIPMENT IDENTITY \.+ (?P<IMEI>\d{14})'
+            ), re.S)
             lac, net, dea, time, cid, imei = r.match(s).groups()
             if lac != 'N':
                 lac = lac.split('/')[1][:-1]
@@ -124,8 +121,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
              '.*ROAMING PROFILE INDEX \.+ (?P<RP>\d*)'
              '.*ROAMING TO UTRAN RESTRICTED \.+ (?P<URE>[YN])'
              '.*ROAMING TO GERAN RESTRICTED \.+ (?P<GRE>[YN])'
-             '.*LATEST LOCATION UPDATE\s+(?P<VLRT>[T0-9\:\+\-\.]*)'
-             )
+             '.*LATEST LOCATION UPDATE\s+(?P<VLRT>[T0-9\:\+\-\.]*)')
         try:
             db = self.match_data(s, r)
         except:
@@ -149,8 +145,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
              '.*CALL FWD ON SUBS. NOT REACHABLE  (?P<CFNR>[\w ]*)'
              '.*CALL FWD ON NO REPLY \.+ (?P<CFNA>[\w ]*)'
              '.*OPERATOR CONTROLLED CALL FWD \.+ (?P<OCCF>[\w ]*)'
-             '.*CALL WAITING \.* (?P<CW>[YNAD ]*)'
-             )
+             '.*CALL WAITING \.* (?P<CW>[YNAD ]*)')
         try:
             db.update(self.match_data(s, r))
         except:
@@ -175,16 +170,13 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         # To get ZMNO
         s = self.send_cmd('ZMNO:IMSI=' + db['IMSI'] + ';\r')
         r = ('.*SGSN ADDRESS \.+ (?P<SGSN>\d*)'
-             '.*NETWORK ACCESS \.+ (?P<NWACC>\w*)'
-             )
+             '.*NETWORK ACCESS \.+ (?P<NWACC>\w*)')
         try:
             db.update(self.match_data(s, r))
         except:
             pass
         r = re.compile(('.*?QUALITY OF SERVICES PROFILE . (\d+)'
-                        '.*?APN \.+ ([\w\.]*)'),
-                       re.S | re.M
-                       )
+                        '.*?APN \.+ ([\w\.]*)'), re.S | re.M)
         try:
             db['QOS'] = ','.join(['@'.join(i) for i in r.findall(s)])
         except:
@@ -196,8 +188,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
              '.*MME ADDRESS PRESENT\.+ (?P<MME>[YN])'
              '.*AMBR DOWNLINK \.+ (?P<DN>\d*)'
              '.*AMBR UPLINK \.+ (?P<UP>\d*)'
-             '.*LATEST LTE LOCATION UPDATE .. (?P<LTET>[T0-9\:\+\-\.]*)'
-             )
+             '.*LATEST LTE LOCATION UPDATE .. (?P<LTET>[T0-9\:\+\-\.]*)')
         try:
             db.update(self.match_data(s, r))
         except:
@@ -218,8 +209,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         # To Get ZMGO
         s = self.send_cmd('ZMGO:IMSI=' + db['IMSI'] + ';\r')
         r = ('.*BAOC ... BARRING OF ALL OUTGOING CALLS \.+ (?P<BAOCODB>[YN])'
-             '.*BAIC ... BARRING OF ALL INCOMING CALLS \.+ (?P<BAICODB>[YN])'
-             )
+             '.*BAIC ... BARRING OF ALL INCOMING CALLS \.+ (?P<BAICODB>[YN])')
         try:
             db.update(self.match_data(s, r))
         except:
@@ -230,7 +220,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         if vlr in cfg['VLR'].keys():
             msisdn = db['MSISDN']
             try:
-                db['NET'], db['LAC'], db['CID'], db['DEA'], db['TIME'], db['IMEI'] = self.get_vlr_info(msisdn, vlr)
+                db['NET'], db['LAC'], db['CID'], db['DEA'], db['TIME'], db[
+                    'IMEI'] = self.get_vlr_info(msisdn, vlr)
             except:
                 pass
 
@@ -365,7 +356,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         for vlr in cfg['VLR'].keys():
             try:
                 db['VLR'] = vlr
-                db['NET'], db['LAC'], db['CID'], db['DEA'], db['TIME'], db['IMEI'] = self.get_vlr_info(msisdn, vlr)
+                db['NET'], db['LAC'], db['CID'], db['DEA'], db['TIME'], db[
+                    'IMEI'] = self.get_vlr_info(msisdn, vlr)
             except:
                 pass
             else:
@@ -502,15 +494,25 @@ class CFxFrame(object):
         self.var = T.StringVar()
         self.var.set('CFU')
         for o, i in enumerate(['CFU', 'CFB', 'CFNA', 'CFNR']):
-            T.Radiobutton(self.frame, text=i, variable=self.var, value=i).grid(row=0, column=o)
-        T.Label(self.frame, text='  - 选择呼转分类，并输入呼转号码。').grid(row=1, column=0, columnspan=4, sticky=T.W)
-        T.Label(self.frame, text='    格式为: 8613004602000 或 8657512345678').grid(row=2, column=0, columnspan=4, sticky=T.W)
-        T.Label(self.frame, text='  - 选择分类，号码留空，则取消对应呼转。').grid(row=3, column=0, columnspan=4, sticky=T.W)
+            T.Radiobutton(
+                self.frame, text=i, variable=self.var, value=i).grid(
+                    row=0, column=o)
+        T.Label(
+            self.frame, text='  - 选择呼转分类，并输入呼转号码。').grid(
+                row=1, column=0, columnspan=4, sticky=T.W)
+        T.Label(
+            self.frame, text='    格式为: 8613004602000 或 8657512345678').grid(
+                row=2, column=0, columnspan=4, sticky=T.W)
+        T.Label(
+            self.frame, text='  - 选择分类，号码留空，则取消对应呼转。').grid(
+                row=3, column=0, columnspan=4, sticky=T.W)
         T.Label(self.frame, text='  呼转号码: ').grid(row=4, column=0, sticky=T.W)
         self.num = T.Entry(self.frame)
         self.num.focus_set()
         self.num.grid(row=4, column=1, columnspan=2, sticky=T.EW)
-        T.Button(self.frame, text='OK', command=self.ok_clicked).grid(row=4, column=3)
+        T.Button(
+            self.frame, text='OK', command=self.ok_clicked).grid(
+                row=4, column=3)
         self.frame.mainloop()
 
     def num_validated(self, num):
@@ -520,7 +522,8 @@ class CFxFrame(object):
         n = self.num.get().strip() or 'E'
         v = self.var.get().strip()
         if not self.num_validated(n):
-            tkMessageBox.showerror('错误', '呼转号码格式无效!\n例子:\n8613004602000\n86575xxxxxxxx')
+            tkMessageBox.showerror(
+                '错误', '呼转号码格式无效!\n例子:\n8613004602000\n86575xxxxxxxx')
         else:
             d = {'CFU': '无条件', 'CFB': '遇忙', 'CFNA': '无应答', 'CFNR': '无网络'}
             if n == 'E':
@@ -529,7 +532,8 @@ class CFxFrame(object):
                     self.cfx_type = v
                     self.frame.destroy()
             else:
-                if tkMessageBox.askokcancel('警告', '确认要 *' + d[v] + '* 呼转到 ' + n + ' ?'):
+                if tkMessageBox.askokcancel(
+                        '警告', '确认要 *' + d[v] + '* 呼转到 ' + n + ' ?'):
                     self.cfx_num = n
                     self.cfx_type = v
                     self.frame.destroy()
