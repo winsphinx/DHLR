@@ -12,8 +12,9 @@ from PyQt4 import QtCore, QtGui, uic
 
 path = os.path.dirname(sys.argv[0])
 uifile = os.path.join(path, 'DHLR.ui')
-uiform = uic.loadUiType(uifile)[0]
+logfile = os.path.join(path, 'DHLR.log')
 cfgfile = os.path.join(path, 'DHLR.json')
+uiform = uic.loadUiType(uifile)[0]
 with open(cfgfile, 'r') as f:
     cfg = json.load(f)
 
@@ -37,6 +38,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.btnRest.clicked.connect(self.rest_num)
         self.connect(self.inputBox,
                      QtCore.SIGNAL('returnPressed()'), self.query_user)
+        self.menu_openLog.triggered.connect(lambda: self.open_log(logfile))
+        self.menu_clearLog.triggered.connect(lambda: self.init_log(logfile))
 
     def check_input(self):
         num = str(self.inputBox.text()).strip()
@@ -468,7 +471,9 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
     def send_cmd(self, cmd):
         self.telnet.write(cmd)
-        return self.telnet.read_until('< ', 10)
+        result = self.telnet.read_until('< ', 10)
+        self.save_log(result, logfile)
+        return result
 
     def convert_msg(self, data):
         msg = ''
@@ -486,6 +491,30 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             return r.match(data).groupdict()
         except:
             raise
+
+    def open_log(self, log):
+        self.textBrowser.clear()
+        try:
+            with open(log, 'r') as f:
+                for line in f.readlines():
+                    self.textBrowser.append(line)
+        except:
+            pass
+
+    def save_log(self, cmd, log):
+        f = open(log, 'a')
+        f.write(cmd)
+        f.close()
+
+    def init_log(self, log):
+        try:
+            f = open(log, 'w')
+            f.truncate()
+            f.close()
+        except:
+            pass
+        self.textBrowser.clear()
+        self.textBrowser.append(u'<font color=green>操作成功!')
 
 
 class CFxFrame(object):
