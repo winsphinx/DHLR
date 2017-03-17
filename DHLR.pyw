@@ -45,9 +45,11 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         elif num.isdigit() and num.startswith('46001') and len(num) == 15:
             return ('I', num)
         elif num == '':
+            self.textBrowser.clear()
             self.textBrowser.append(u'<font color=red>请输号码!')
             return
         else:
+            self.textBrowser.clear()
             self.textBrowser.append(u'<font color=red>格式无效!')
             return
 
@@ -99,10 +101,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             return (net, lac, cid, dea, time, imei)
 
     def query_user(self):
-        self.textBrowser.clear()
         try:
             self.login_dev(cfg['HLR'])
         except:
+            self.textBrowser.clear()
             self.textBrowser.append(u'<font color=red>连接出错!')
             return
 
@@ -229,6 +231,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             except:
                 pass
 
+        self.textBrowser.clear()
         self.textBrowser.append(self.convert_msg(db))
         self.close_dev()
 
@@ -348,24 +351,24 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.close_dev()
 
     def query_other(self):
+        db = {}
         if self.check_input():
             _, msisdn = self.check_input()
-            db = {}
             found = 0
-        for vlr in cfg['VLR'].keys():
-            try:
+            for vlr in cfg['VLR'].keys():
                 db['VLR'] = vlr
-                db['NET'], db['LAC'], db['CID'], db['DEA'], db['TIME'], db[
-                    'IMEI'] = self.get_vlr_info(msisdn, vlr)
-            except:
-                pass
-            else:
-                found = 1
+                try:
+                    db['NET'], db['LAC'], db['CID'], db['DEA'], db['TIME'], db[
+                        'IMEI'] = self.get_vlr_info(msisdn, vlr)
+                except:
+                    pass
+                else:
+                    found = 1
+                    self.textBrowser.clear()
+                    self.textBrowser.append(self.convert_msg(db))
+            if not found:
                 self.textBrowser.clear()
-                self.textBrowser.append(self.convert_msg(db))
-        if not found:
-            self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>没有位置信息!')
+                self.textBrowser.append(u'<font color=red>没有位置信息!')
 
     def call_forward(self):
         try:
