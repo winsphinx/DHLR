@@ -497,7 +497,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         try:
             with open(log, 'r') as f:
                 for line in f.readlines():
-                    self.textBrowser.append(line)
+                    self.textBrowser.append(line.strip())
         except:
             pass
 
