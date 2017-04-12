@@ -71,7 +71,7 @@
        </font>
       </property>
       <property name="text">
-       <string>4G -&gt; 3G</string>
+       <string>关闭 4G</string>
       </property>
      </widget>
     </item>
@@ -83,7 +83,7 @@
        </font>
       </property>
       <property name="text">
-       <string>3G -&gt; 4G</string>
+       <string>开启 4G</string>
       </property>
      </widget>
     </item>
@@ -119,7 +119,7 @@
        </font>
       </property>
       <property name="text">
-       <string>3G -&gt; 2G</string>
+       <string>关闭 3G</string>
       </property>
      </widget>
     </item>
@@ -131,7 +131,7 @@
        </font>
       </property>
       <property name="text">
-       <string>2G -&gt; 3G</string>
+       <string>开启 3G</string>
       </property>
      </widget>
     </item>
