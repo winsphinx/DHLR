@@ -77,9 +77,9 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         host = cfg['VLR'][vlr]
         server = telnetlib.Telnet(host)
         server.read_until('ENTER USERNAME < ')
-        server.write('SXWGZB\r')
+        server.write(str(cfg['Login']['username']) + '\r')
         server.read_until('ENTER PASSWORD < ')
-        server.write('1Q2W3E4R\r')
+        server.write(str(cfg['Login']['password']) + '\r')
         server.read_until('< ', 10)
         server.write('ZMVO:MSISDN=' + msisdn + ';\r')
         s = server.read_until('< ', 10)
