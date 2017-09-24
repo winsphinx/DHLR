@@ -496,10 +496,12 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.textBrowser.clear()
         try:
             with open(log, 'r') as f:
-                for line in f.readlines():
-                    self.textBrowser.append(line.strip())
+                txt = f.read()
         except:
-            pass
+            txt = u'<font color=red>没有日志!'
+        finally:
+            self.textBrowser.setText(txt)
+
 
     def save_log(self, cmd, log):
         f = open(log, 'a')
