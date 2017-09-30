@@ -502,10 +502,9 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         finally:
             self.textBrowser.setText(txt)
 
-
     def save_log(self, cmd, log):
         f = open(log, 'a')
-        f.write(cmd)
+        f.write(cmd.rstrip())
         f.close()
 
     def init_log(self, log):
