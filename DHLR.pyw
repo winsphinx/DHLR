@@ -45,7 +45,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         num = str(self.inputBox.text()).strip()
         if num.isdigit() and num.startswith('861') and len(num) == 13:
             return ('M', num)
-        elif num.isdigit() and num.startswith('46001') and len(num) == 15:
+        elif num.isdigit() and num.startswith('4600') and len(num) == 15:
             return ('I', num)
         elif num == '':
             self.textBrowser.clear()
