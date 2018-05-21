@@ -1,13 +1,14 @@
 #!/usr/bin/env python2
 # -- coding: utf-8 --
 
+import json
 import os
 import re
 import sys
-import json
 import telnetlib
 import Tkinter as T
 import tkMessageBox
+
 from PyQt4 import QtCore, QtGui, uic
 
 path = os.path.dirname(sys.argv[0])
@@ -20,7 +21,6 @@ with open(cfgfile, 'r') as f:
 
 
 class DHLRForm(QtGui.QMainWindow, uiform):
-
     def __init__(self, parent=None, telnet=telnetlib.Telnet()):
         QtGui.QMainWindow.__init__(self, parent)
         self.setupUi(self)
@@ -28,16 +28,18 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.telnet = telnet
         self.btnQuery.clicked.connect(self.query_user)
         self.btnLocUpd.clicked.connect(self.update_location)
-        self.btn4to3.clicked.connect(self.four_three)
-        self.btn3to2.clicked.connect(self.three_two)
-        self.btn2to3.clicked.connect(self.two_three)
-        self.btn3to4.clicked.connect(self.three_four)
+        self.btn2off.clicked.connect(self.two_off)
+        self.btn2on.clicked.connect(self.two_on)
+        self.btn3off.clicked.connect(self.three_off)
+        self.btn3on.clicked.connect(self.three_on)
+        self.btn4off.clicked.connect(self.four_off)
+        self.btn4on.clicked.connect(self.four_on)
         self.btnQueryOther.clicked.connect(self.query_other)
         self.btnCFx.clicked.connect(self.call_forward)
         self.btnStop.clicked.connect(self.stop_num)
         self.btnRest.clicked.connect(self.rest_num)
-        self.connect(self.inputBox,
-                     QtCore.SIGNAL('returnPressed()'), self.query_user)
+        self.connect(self.inputBox, QtCore.SIGNAL('returnPressed()'),
+                     self.query_user)
         self.menu_openLog.triggered.connect(lambda: self.open_log(logfile))
         self.menu_clearLog.triggered.connect(lambda: self.init_log(logfile))
 
@@ -261,7 +263,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         self.close_dev()
 
-    def four_three(self):
+    def four_off(self):
         try:
             self.login_dev(cfg['HLR'])
         except:
@@ -284,7 +286,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         self.close_dev()
 
-    def three_four(self):
+    def four_on(self):
         try:
             self.login_dev(cfg['HLR'])
         except:
@@ -307,7 +309,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         self.close_dev()
 
-    def three_two(self):
+    def three_off(self):
         try:
             self.login_dev(cfg['HLR'])
         except:
@@ -330,7 +332,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         self.close_dev()
 
-    def two_three(self):
+    def three_on(self):
         try:
             self.login_dev(cfg['HLR'])
         except:
@@ -344,6 +346,52 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                 try:
                     imsi = self.get_imsi(flag, num)
                     self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=N;\r')
+                except:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=red>无效用户!')
+                else:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=green>操作成功!')
+
+        self.close_dev()
+
+    def two_off(self):
+        try:
+            self.login_dev(cfg['HLR'])
+        except:
+            self.textBrowser.clear()
+            self.textBrowser.append(u'<font color=red>连接出错!')
+            return
+
+        if self.check_input():
+            flag, num = self.check_input()
+            if Confirm('确认对 ' + num + ' 做降网?').comfirmed:
+                try:
+                    imsi = self.get_imsi(flag, num)
+                    self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=Y;\r')
+                except:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=red>无效用户!')
+                else:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=green>操作成功!')
+
+        self.close_dev()
+
+    def two_on(self):
+        try:
+            self.login_dev(cfg['HLR'])
+        except:
+            self.textBrowser.clear()
+            self.textBrowser.append(u'<font color=red>连接出错!')
+            return
+
+        if self.check_input():
+            flag, num = self.check_input()
+            if Confirm('确认对 ' + num + ' 做升网?').comfirmed:
+                try:
+                    imsi = self.get_imsi(flag, num)
+                    self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=N;\r')
                 except:
                     self.textBrowser.clear()
                     self.textBrowser.append(u'<font color=red>无效用户!')
@@ -414,7 +462,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             if Confirm('确认对 ' + num + ' 做停机?').comfirmed:
                 try:
                     imsi = self.get_imsi(flag, num)
-                    self.send_cmd('ZMGC:IMSI=' + imsi + ':CBO=BAOC,CBI=BAIC;\r')
+                    self.send_cmd('ZMGC:IMSI=' + imsi +
+                                  ':CBO=BAOC,CBI=BAIC;\r')
                 except:
                     self.textBrowser.clear()
                     self.textBrowser.append(u'<font color=red>无效用户!')
@@ -519,7 +568,6 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
 
 class CFxFrame(object):
-
     def __init__(self):
         self.cfx_num = ''
         self.cfx_type = ''
@@ -574,7 +622,6 @@ class CFxFrame(object):
 
 
 class Confirm(object):
-
     def __init__(self, msg):
         self.msg = msg
         self.box = T.Tk()

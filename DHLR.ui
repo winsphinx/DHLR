@@ -51,7 +51,76 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
+    <item row="2" column="1">
+     <widget class="QPushButton" name="btnQuery">
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>查询</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLineEdit" name="inputBox">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="maxLength">
+       <number>15</number>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="5">
+     <widget class="QTextBrowser" name="textBrowser">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="4">
+     <widget class="QPushButton" name="btnCFx">
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>呼叫转移</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <widget class="QPushButton" name="btnQueryOther">
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>查询位置</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QPushButton" name="btnLocUpd">
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>位置更新</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
      <widget class="QPushButton" name="btnStop">
       <property name="font">
        <font>
@@ -63,31 +132,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="3">
-     <widget class="QPushButton" name="btn4to3">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>关闭 4G</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="4">
-     <widget class="QPushButton" name="btn3to4">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>开启 4G</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="2">
+    <item row="1" column="1">
      <widget class="QPushButton" name="btnRest">
       <property name="minimumSize">
        <size>
@@ -105,8 +150,32 @@
       </property>
      </widget>
     </item>
+    <item row="1" column="2">
+     <widget class="QPushButton" name="btn4on">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>开启 4G</string>
+      </property>
+     </widget>
+    </item>
     <item row="1" column="3">
-     <widget class="QPushButton" name="btn3to2">
+     <widget class="QPushButton" name="btn3on">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>开启 3G</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QPushButton" name="btn3off">
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -123,84 +192,45 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="4">
-     <widget class="QPushButton" name="btn2to3">
+    <item row="0" column="2">
+     <widget class="QPushButton" name="btn4off">
       <property name="font">
        <font>
         <pointsize>10</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>开启 3G</string>
+       <string>关闭 4G</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
-     <widget class="QLineEdit" name="inputBox">
+    <item row="0" column="4">
+     <widget class="QPushButton" name="btn2off">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
       <property name="font">
        <font>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-      <property name="maxLength">
-       <number>15</number>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QPushButton" name="btnQuery">
-      <property name="font">
-       <font>
-        <pointsize>11</pointsize>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>查询</string>
+       <string>关闭 2G</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="2">
-     <widget class="QPushButton" name="btnLocUpd">
+    <item row="1" column="4">
+     <widget class="QPushButton" name="btn2on">
       <property name="font">
        <font>
-        <pointsize>11</pointsize>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>位置更新</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="3">
-     <widget class="QPushButton" name="btnQueryOther">
-      <property name="font">
-       <font>
-        <pointsize>11</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>查询位置</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="4">
-     <widget class="QPushButton" name="btnCFx">
-      <property name="font">
-       <font>
-        <pointsize>11</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>呼叫转移</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="5">
-     <widget class="QTextBrowser" name="textBrowser">
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
+       <string>开启 2G</string>
       </property>
      </widget>
     </item>
@@ -253,12 +283,6 @@
   <tabstop>btnLocUpd</tabstop>
   <tabstop>btnQueryOther</tabstop>
   <tabstop>btnCFx</tabstop>
-  <tabstop>btn4to3</tabstop>
-  <tabstop>btn3to4</tabstop>
-  <tabstop>btn3to2</tabstop>
-  <tabstop>btn2to3</tabstop>
-  <tabstop>btnStop</tabstop>
-  <tabstop>btnRest</tabstop>
   <tabstop>textBrowser</tabstop>
  </tabstops>
  <resources/>
