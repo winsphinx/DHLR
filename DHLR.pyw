@@ -91,6 +91,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.statusBar().showMessage(' Disconnected')
         if not re.search('FAILED', s):
             r = re.compile((
+                '.*INTERNATIONAL MOBILE SUBSCRIBER IDENTITY \.+ (?P<IMSI>\d{15})'
                 '.*LOCATION AREA CODE OF IMSI \.+ (?P<LAC>[\w\/]*)'
                 '.*RADIO ACCESS INFO \.+ (?P<NET>\w*)'
                 '.*IMSI DETACH FLAG \.+ (?P<DEA>[YN])'
@@ -98,12 +99,12 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                 '.*LAST USED CELL ID \.+ (?P<CID>[\w\/]*)'
                 '.*INTERNATIONAL MOBILE STATION EQUIPMENT IDENTITY \.+ (?P<IMEI>\d{14})'
             ), re.S)
-            lac, net, dea, time, cid, imei = r.match(s).groups()
+            imsi, lac, net, dea, time, cid, imei = r.match(s).groups()
             if lac != 'N':
                 lac = lac.split('/')[1][:-1]
             if cid != 'N':
                 cid = cid.split('/')[1][:-1]
-            return (net, lac, cid, dea, time, imei)
+            return (imsi, net, lac, cid, dea, time, imei)
 
     def query_user(self):
         try:
@@ -231,7 +232,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         if vlr in cfg['VLR'].keys():
             msisdn = db['MSISDN']
             try:
-                db['NET'], db['LAC'], db['CID'], db['DEA'], db['TIME'], db[
+                _, db['NET'], db['LAC'], db['CID'], db['DEA'], db['TIME'], db[
                     'IMEI'] = self.get_vlr_info(msisdn, vlr)
             except:
                 pass
@@ -409,8 +410,8 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             for vlr in cfg['VLR'].keys():
                 db['VLR'] = vlr
                 try:
-                    db['NET'], db['LAC'], db['CID'], db['DEA'], db['TIME'], db[
-                        'IMEI'] = self.get_vlr_info(msisdn, vlr)
+                    db['IMSI'], db['NET'], db['LAC'], db['CID'], db['DEA'], db[
+                        'TIME'], db['IMEI'] = self.get_vlr_info(msisdn, vlr)
                 except:
                     pass
                 else:
