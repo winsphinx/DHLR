@@ -1,4 +1,5 @@
 version: '1.0.{build}'
+skip_tags: true
 
 environment:
   matrix:
@@ -25,3 +26,15 @@ after_build:
 artifacts:
   - path: DHLR.zip
     name: DHLR
+
+deploy:
+  release: DHLR-v$(appveyor_build_version)
+  description: ''
+  provider: GitHub
+  auth_token:
+    secure: x2VCjhjls6MUIYqj+WN0D5Db4HA3hTIep++8jGWbSQtnGcPMfzj5gWW39ZNg1z/5
+  artifact: DHLR.zip
+  force_update: true
+  draft: false
+  prerelease: false
+  appveyor_repo_tag: false
