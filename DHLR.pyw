@@ -7,8 +7,8 @@ import re
 import sys
 import telnetlib
 import Tkinter as T
-import tkMessageBox
 
+import tkMessageBox
 from PyQt4 import QtCore, QtGui, uic
 
 path = os.path.dirname(sys.argv[0])
@@ -577,25 +577,25 @@ class CFxFrame(object):
         self.var = T.StringVar()
         self.var.set('CFU')
         for o, i in enumerate(['CFU', 'CFB', 'CFNA', 'CFNR']):
-            T.Radiobutton(
-                self.frame, text=i, variable=self.var, value=i).grid(
-                    row=0, column=o)
-        T.Label(
-            self.frame, text='  - 选择呼转分类，并输入呼转号码。').grid(
-                row=1, column=0, columnspan=4, sticky=T.W)
-        T.Label(
-            self.frame, text='    格式为: 8613004602000 或 8657512345678').grid(
-                row=2, column=0, columnspan=4, sticky=T.W)
-        T.Label(
-            self.frame, text='  - 选择分类，号码留空，则取消对应呼转。').grid(
-                row=3, column=0, columnspan=4, sticky=T.W)
+            T.Radiobutton(self.frame, text=i, variable=self.var,
+                          value=i).grid(row=0, column=o)
+        T.Label(self.frame, text='  - 选择呼转分类，并输入呼转号码。').grid(row=1,
+                                                             column=0,
+                                                             columnspan=4,
+                                                             sticky=T.W)
+        T.Label(self.frame,
+                text='    格式为: 8613004602000 或 8657512345678').grid(
+                    row=2, column=0, columnspan=4, sticky=T.W)
+        T.Label(self.frame, text='  - 选择分类，号码留空，则取消对应呼转。').grid(row=3,
+                                                                column=0,
+                                                                columnspan=4,
+                                                                sticky=T.W)
         T.Label(self.frame, text='  呼转号码: ').grid(row=4, column=0, sticky=T.W)
         self.num = T.Entry(self.frame)
         self.num.focus_set()
         self.num.grid(row=4, column=1, columnspan=2, sticky=T.EW)
-        T.Button(
-            self.frame, text='OK', command=self.ok_clicked).grid(
-                row=4, column=3)
+        T.Button(self.frame, text='OK', command=self.ok_clicked).grid(row=4,
+                                                                      column=3)
         self.frame.mainloop()
 
     def num_validated(self, num):
