@@ -8,9 +8,8 @@ import sys
 import telnetlib
 import Tkinter as T
 
-from PyQt4 import QtCore, QtGui, uic
-
 import tkMessageBox
+from PyQt4 import QtCore, QtGui, uic
 
 path = os.path.dirname(sys.argv[0])
 uifile = os.path.join(path, 'DHLR.ui')
@@ -636,7 +635,13 @@ class CFxFrame(object):
             tkMessageBox.showerror(
                 '错误', '呼转号码格式无效!\n例子:\n8613004602000\n86575xxxxxxxx')
         else:
-            d = {'CFU': '无条件', 'CFB': '遇忙', 'CFNA': '无应答', 'CFNR': '无网络', 'OCCF': '隐含呼转'}
+            d = {
+                'CFU': '无条件',
+                'CFB': '遇忙',
+                'CFNA': '无应答',
+                'CFNR': '无网络',
+                'OCCF': '隐含呼转'
+            }
             if n == 'E':
                 if tkMessageBox.askokcancel('警告', '确认要取消 *' + d[v] + '* 呼转?'):
                     self.cfx_num = n
