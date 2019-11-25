@@ -576,7 +576,7 @@ class CFxFrame(object):
         self.frame.title('呼转')
         self.var = T.StringVar()
         self.var.set('CFU')
-        for o, i in enumerate(['CFU', 'CFB', 'CFNA', 'CFNR']):
+        for o, i in enumerate(['CFU', 'CFB', 'CFNA', 'CFNR', 'OCCF']):
             T.Radiobutton(self.frame, text=i, variable=self.var,
                           value=i).grid(row=0, column=o)
         T.Label(self.frame, text='  - 选择呼转分类，并输入呼转号码。').grid(row=1,
@@ -608,7 +608,7 @@ class CFxFrame(object):
             tkMessageBox.showerror(
                 '错误', '呼转号码格式无效!\n例子:\n8613004602000\n86575xxxxxxxx')
         else:
-            d = {'CFU': '无条件', 'CFB': '遇忙', 'CFNA': '无应答', 'CFNR': '无网络'}
+            d = {'CFU': '无条件', 'CFB': '遇忙', 'CFNA': '无应答', 'CFNR': '无网络', 'OCCF': '隐含呼转'}
             if n == 'E':
                 if tkMessageBox.askokcancel('警告', '确认要取消 *' + d[v] + '* 呼转?'):
                     self.cfx_num = n
