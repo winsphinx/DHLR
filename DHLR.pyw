@@ -8,8 +8,9 @@ import sys
 import telnetlib
 import Tkinter as T
 
-import tkMessageBox
 from PyQt4 import QtCore, QtGui, uic
+
+import tkMessageBox
 
 path = os.path.dirname(sys.argv[0])
 uifile = os.path.join(path, 'DHLR.ui')
@@ -38,6 +39,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.btnCFx.clicked.connect(self.call_forward)
         self.btnStop.clicked.connect(self.stop_num)
         self.btnRest.clicked.connect(self.rest_num)
+        self.btnKickOut.clicked.connect(self.kick)
         self.connect(self.inputBox, QtCore.SIGNAL('returnPressed()'),
                      self.query_user)
         self.menu_openLog.triggered.connect(lambda: self.open_log(logfile))
@@ -392,6 +394,32 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             if Confirm('确认对 ' + num + ' 做升网?').comfirmed:
                 try:
                     imsi = self.get_imsi(flag, num)
+                    self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=N;\r')
+                except:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=red>无效用户!')
+                else:
+                    self.textBrowser.clear()
+                    self.textBrowser.append(u'<font color=green>操作成功!')
+
+        self.close_dev()
+
+    def kick(self):
+        try:
+            self.login_dev(cfg['HLR'])
+        except:
+            self.textBrowser.clear()
+            self.textBrowser.append(u'<font color=red>连接出错!')
+            return
+
+        if self.check_input():
+            flag, num = self.check_input()
+            if Confirm('确认对 ' + num + ' 做踢线?').comfirmed:
+                try:
+                    imsi = self.get_imsi(flag, num)
+                    self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=Y;\r')
+                    self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=N;\r')
+                    self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=Y;\r')
                     self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=N;\r')
                 except:
                     self.textBrowser.clear()
