@@ -1,9 +1,9 @@
 {
     "HLR": {
-        "host":       "192.92.151.167",
-        "port":       9091,
-        "username":   "SHAOXING",
-        "password":   "NOKIA1234"
+        "host": "192.92.151.167",
+        "port": 9091,
+        "username": "SHAOXING",
+        "password": "NOKIA1234"
     },
 
     "VLR": {
@@ -12,8 +12,8 @@
     },
 
     "Login": {
-        "username":   "SXWGZB",
-        "password":   "1Q2W3E4R"
+        "username": "SXWGZB",
+        "password": "1Q2W3E4R"
     },
 
     "Order": [
@@ -60,43 +60,43 @@
     ],
 
     "Locale": {
-        "SAM":        "<a href=# title='ALL=国际\nNAT=全国'>漫游权限</a>",
-        "RP":         "<a href=# title='1=省内\n2=本地\n99=港澳台\nN=不限'>漫游范围</a>",
-        "SERV":       "<a href=# title='T11=语音\nT22=发短信\nT21=收短信\nB1F=视频'>业务类别</a>",
-        "BAOC":       "<a href=# title='Y A=不能打出\n其他=不限制'>限制主叫</a>",
-        "BAIC":       "<a href=# title='Y A=不能打进\n其他=不限制'>限制被叫</a>",
-        "BOIC":       "<a href=# title='Y A=不能打国际长途\n其他=不限制'>限制国际长途</a>",
-        "BAOCODB":    "主叫欠费",
-        "BAICODB":    "被叫欠费",
-        "CFU":        "无条件呼转",
-        "CFB":        "遇忙呼转",
-        "CFNA":       "无应答呼转",
-        "CFNR":       "无网络呼转",
-        "OCCF":       "隐含呼转",
-        "CLIP":       "来电显示",
-        "CLIR":       "去电禁显",
-        "CW":         "<a href=# title='Y A=激活\n其他=未激活'>呼叫等待</a>",
-        "HOLD":       "呼叫保持",
-        "MTPY":       "多方通话",
-        "SRBT":       "炫铃",
-        "GRE":        "<a href=# title='Y=不允许使用2G\nN=可以用2G'>限制2G登网</a>",
-        "URE":        "<a href=# title='Y=不允许使用3G\nN=可以用3G'>限制3G登网</a>",
-        "VLR":        "<a href=# title='8615644011=SS18\n8615644650=SS19\n其他=外地\nN=未登网'>VLR地址</a>",
-        "NET":        "••••<a href=# title='GSM=2G\nUMTS=3G\nLTE=4G'>NET</a>",
-        "LAC":        "••••LAC",
-        "CID":        "••••CID",
-        "DEA":        "••••关机",
-        "TIME":       "••••TIME",
-        "IMEI":       "••••IMEI",
-        "VLRT":       "2/3G最后时间",
-        "NWACC":      "<a href=# title='NONGPRS=未开通\nBOTH=开通'>2/3G数据功能</a>",
-        "QOS":        "<a href=# title='速率: 下行|上行\n33=2048|2048\n34=384|192\n42=43000|5952\n51=7424|2048\n52=7424|5952\n53=10200|5120\n55=22000|5952\n56=1024|1024\n57=512|512\n128=1500|128'>2/3G数据速率</a>",
-        "SGSN":       "SGSN地址",
-        "EPS":        "<a href=# title='GRANTED=开通\nDENIED=未开通'>4G功能</a>",
-        "LTE":        "4G速率",
-        "AP4":        "4G接入点",
-        "MME":        "4G登网",
-        "LTET":       "4G最后时间",
-        "SCP":        "<a href=# title='8613090479=OCS预付费用户\n8613090366=VPN普通虚拟网\nN=非智能网用户'>SCP地址</a>"
+        "SAM": "<a href=# title='ALL=国际\nNAT=全国'>漫游权限</a>",
+        "RP": "<a href=# title='1=省内\n2=本地\n99=港澳台\nN=不限'>漫游范围</a>",
+        "SERV": "<a href=# title='T11=语音\nT22=发短信\nT21=收短信\nB1F=视频'>业务类别</a>",
+        "BAOC": "<a href=# title='Y A=不能打出\n其他=不限制'>限制主叫</a>",
+        "BAIC": "<a href=# title='Y A=不能打进\n其他=不限制'>限制被叫</a>",
+        "BOIC": "<a href=# title='Y A=不能打国际长途\n其他=不限制'>限制国际长途</a>",
+        "BAOCODB": "主叫欠费",
+        "BAICODB": "被叫欠费",
+        "CFU": "无条件呼转",
+        "CFB": "遇忙呼转",
+        "CFNA": "无应答呼转",
+        "CFNR": "无网络呼转",
+        "OCCF": "隐含呼转",
+        "CLIP": "来电显示",
+        "CLIR": "去电禁显",
+        "CW": "<a href=# title='Y A=激活\n其他=未激活'>呼叫等待</a>",
+        "HOLD": "呼叫保持",
+        "MTPY": "多方通话",
+        "SRBT": "炫铃",
+        "GRE": "<a href=# title='Y=不允许使用2G\nN=可以用2G'>限制2G登网</a>",
+        "URE": "<a href=# title='Y=不允许使用3G\nN=可以用3G'>限制3G登网</a>",
+        "VLR": "<a href=# title='8615644011=SS18\n8615644650=SS19\n其他=外地\nN=未登网'>VLR地址</a>",
+        "NET": "••••<a href=# title='GSM=2G\nUMTS=3G\nLTE=4G'>NET</a>",
+        "LAC": "••••LAC",
+        "CID": "••••CID",
+        "DEA": "••••关机",
+        "TIME": "••••TIME",
+        "IMEI": "••••IMEI",
+        "VLRT": "2/3G最后时间",
+        "NWACC": "<a href=# title='NONGPRS=未开通\nBOTH=开通'>2/3G数据功能</a>",
+        "QOS": "<a href=# title='速率: 下行|上行\n33=2048|2048\n34=384|192\n42=43000|5952\n51=7424|2048\n52=7424|5952\n53=10200|5120\n55=22000|5952\n56=1024|1024\n57=512|512\n128=1500|128'>2/3G数据速率</a>",
+        "SGSN": "SGSN地址",
+        "EPS": "<a href=# title='GRANTED=开通\nDENIED=未开通'>4G功能</a>",
+        "LTE": "4G速率",
+        "AP4": "4G接入点",
+        "MME": "4G登网",
+        "LTET": "4G最后时间",
+        "SCP": "<a href=# title='8613090479=OCS预付费用户\n8613090365-6-7=VPN普通虚拟网\n8613090479=SACP\n8613200121=WVPN\n8613000373=VoLTE-SCP\n8613000417=防骚扰\n8613090429=主叫管控N=非智能网用户'>SCP地址</a>"
     }
 }
