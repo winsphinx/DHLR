@@ -3,25 +3,21 @@ skip_tags: true
 
 environment:
   matrix:
-    - PYTHON: "C:\Python27"
-      PYTHON_VERSION: "2.7.x"
+    - PYTHON: "C:\\Python37"
+      PYTHON_VERSION: "3.7.x"
       PYTHON_ARCH: "32"
-      PyQT: "https://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x32.exe"
 
 install:
-  - pip install -U PyInstaller
-
-before_build:
-  - ps: Start-FileDownload $env:PyQT -FileName .\pyqt4_install.exe
-  - ps: .\pyqt4_install.exe /S
+  - "%PYTHON%\\python -m pip install --upgrade pip"
+  - "%PYTHON%\\python -m pip install -U PyInstaller PyQt5"
 
 build_script:
-  - python -m PyInstaller -i DHLR.ico -w DHLR.pyw
+  - "%PYTHON%\\python -m PyInstaller -F -i DHLR.ico -w DHLR.pyw"
 
 after_build:
-  - ps: cp DHLR.* dist\DHLR\
+  - ps: cp DHLR.* dist\
   - ps: cd dist\
-  - ps: 7z a ..\DHLR.zip DHLR\*
+  - ps: 7z a ..\DHLR.zip *
 
 artifacts:
   - path: DHLR.zip
