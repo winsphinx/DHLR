@@ -1,28 +1,34 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -- coding: utf-8 --
 
+import codecs
 import json
 import os
 import re
 import sys
 import telnetlib
-import Tkinter as T
+import tkinter as T
+import tkinter.messagebox
 
-import tkMessageBox
-from PyQt4 import QtCore, QtGui, uic
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
+
+# from PyQt5.QtWidgets import QApplication, QMainWindow
 
 path = os.path.dirname(sys.argv[0])
 uifile = os.path.join(path, 'DHLR.ui')
 logfile = os.path.join(path, 'DHLR.log')
 cfgfile = os.path.join(path, 'DHLR.json')
 uiform = uic.loadUiType(uifile)[0]
-with open(cfgfile, 'r') as f:
+# Ui_MainWindow, QtBaseClass=uic.loadUiType(uifile)
+# Ui_Dialog=uic.loadUiType(uifile)
+
+with codecs.open(cfgfile, 'r', 'utf-8') as f:
     cfg = json.load(f)
 
 
-class DHLRForm(QtGui.QMainWindow, uiform):
+class DHLRForm(QtWidgets.QMainWindow, uiform):
     def __init__(self, parent=None, telnet=telnetlib.Telnet()):
-        QtGui.QMainWindow.__init__(self, parent)
+        QtWidgets.QMainWindow.__init__(self, parent)
         self.setupUi(self)
         self.statusBar().showMessage(' Ready')
         self.telnet = telnet
@@ -39,8 +45,9 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.btnStop.clicked.connect(self.stop_num)
         self.btnRest.clicked.connect(self.rest_num)
         self.btnKickOut.clicked.connect(self.kick)
-        self.connect(self.inputBox, QtCore.SIGNAL('returnPressed()'),
-                     self.query_user)
+        self.inputBox.returnPressed.connect(self.query_user)
+        # self.connect(self.inputBox, QtCore.SIGNAL('returnPressed()'),
+        #              self.query_user)
         self.menu_openLog.triggered.connect(lambda: self.open_log(logfile))
         self.menu_clearLog.triggered.connect(lambda: self.init_log(logfile))
 
@@ -52,11 +59,11 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             return ('I', num)
         elif num == '':
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>请输号码!')
+            self.textBrowser.append('<font color=red>请输号码!')
             return
         else:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>格式无效!')
+            self.textBrowser.append('<font color=red>格式无效!')
             return
 
     def get_imsi(self, flag, num):
@@ -79,15 +86,15 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.statusBar().showMessage(' Connected!')
         host = cfg['VLR'][vlr]
         server = telnetlib.Telnet(host)
-        server.read_until('ENTER USERNAME < ')
-        server.write(str(cfg['Login']['username']) + '\r')
-        server.read_until('ENTER PASSWORD < ')
-        server.write(str(cfg['Login']['password']) + '\r')
+        server.read_until(b'ENTER USERNAME < ')
+        server.write(str(cfg['Login']['username']) + b'\r')
+        server.read_until(b'ENTER PASSWORD < ')
+        server.write(str(cfg['Login']['password']) + b'\r')
         server.read_until('< ', 10)
-        server.write('ZMVO:MSISDN=' + msisdn + ';\r')
-        s = server.read_until('< ', 10)
-        server.write('ZMWI:MSISDN=' + msisdn + ';\r')
-        s += server.read_until('< ', 10)
+        server.write(b'ZMVO:MSISDN=' + msisdn + b';\r')
+        s = server.read_until(b'< ', 10)
+        server.write(b'ZMWI:MSISDN=' + msisdn + b';\r')
+        s += server.read_until(b'< ', 10)
         server.close()
         self.statusBar().showMessage(' Disconnected')
         if not re.search('FAILED', s):
@@ -112,7 +119,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>连接出错!')
+            self.textBrowser.append('<font color=red>连接出错!')
             return
 
         if self.check_input():
@@ -139,7 +146,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             db = self.match_data(s, r)
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>无效用户!')
+            self.textBrowser.append('<font color=red>无效用户!')
             self.close_dev()
             return
 
@@ -230,7 +237,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
 
         # To Get LAC/CID
         vlr = db['VLR']
-        if vlr in cfg['VLR'].keys():
+        if vlr in list(cfg['VLR'].keys()):
             msisdn = db['MSISDN']
             try:
                 _, db['NET'], db['LAC'], db['CID'], db['DEA'], db['TIME'], db[
@@ -247,7 +254,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>连接出错!')
+            self.textBrowser.append('<font color=red>连接出错!')
             return
 
         if self.check_input():
@@ -258,10 +265,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     self.send_cmd('ZMIM:IMSI=' + imsi + ':VLR=N;\r')
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=red>无效用户!')
+                    self.textBrowser.append('<font color=red>无效用户!')
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=green>操作成功!')
+                    self.textBrowser.append('<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -270,7 +277,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>连接出错!')
+            self.textBrowser.append('<font color=red>连接出错!')
             return
 
         if self.check_input():
@@ -281,10 +288,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=DENIED;\r')
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=red>无效用户!')
+                    self.textBrowser.append('<font color=red>无效用户!')
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=green>操作成功!')
+                    self.textBrowser.append('<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -293,7 +300,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>连接出错!')
+            self.textBrowser.append('<font color=red>连接出错!')
             return
 
         if self.check_input():
@@ -304,10 +311,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=GRANTED;\r')
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=red>无效用户!')
+                    self.textBrowser.append('<font color=red>无效用户!')
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=green>操作成功!')
+                    self.textBrowser.append('<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -316,7 +323,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>连接出错!')
+            self.textBrowser.append('<font color=red>连接出错!')
             return
 
         if self.check_input():
@@ -327,10 +334,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=Y;\r')
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=red>无效用户!')
+                    self.textBrowser.append('<font color=red>无效用户!')
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=green>操作成功!')
+                    self.textBrowser.append('<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -339,7 +346,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>连接出错!')
+            self.textBrowser.append('<font color=red>连接出错!')
             return
 
         if self.check_input():
@@ -350,10 +357,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=N;\r')
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=red>无效用户!')
+                    self.textBrowser.append('<font color=red>无效用户!')
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=green>操作成功!')
+                    self.textBrowser.append('<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -362,7 +369,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>连接出错!')
+            self.textBrowser.append('<font color=red>连接出错!')
             return
 
         if self.check_input():
@@ -373,10 +380,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=Y;\r')
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=red>无效用户!')
+                    self.textBrowser.append('<font color=red>无效用户!')
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=green>操作成功!')
+                    self.textBrowser.append('<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -385,7 +392,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>连接出错!')
+            self.textBrowser.append('<font color=red>连接出错!')
             return
 
         if self.check_input():
@@ -396,10 +403,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=N;\r')
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=red>无效用户!')
+                    self.textBrowser.append('<font color=red>无效用户!')
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=green>操作成功!')
+                    self.textBrowser.append('<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -408,7 +415,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>连接出错!')
+            self.textBrowser.append('<font color=red>连接出错!')
             return
 
         if self.check_input():
@@ -422,10 +429,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=N;\r')
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=red>无效用户!')
+                    self.textBrowser.append('<font color=red>无效用户!')
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=green>操作成功!')
+                    self.textBrowser.append('<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -434,7 +441,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         if self.check_input():
             _, msisdn = self.check_input()
             found = 0
-            for vlr in cfg['VLR'].keys():
+            for vlr in list(cfg['VLR'].keys()):
                 db['VLR'] = vlr
                 try:
                     db['IMSI'], db['NET'], db['LAC'], db['CID'], db['DEA'], db[
@@ -447,14 +454,14 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     self.textBrowser.append(self.convert_msg(db))
             if not found:
                 self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=red>没有位置信息!')
+                self.textBrowser.append('<font color=red>没有位置信息!')
 
     def call_forward(self):
         try:
             self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>连接出错!')
+            self.textBrowser.append('<font color=red>连接出错!')
             return
 
         if self.check_input():
@@ -463,17 +470,17 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                 imsi = self.get_imsi(flag, num)
             except:
                 self.textBrowser.clear()
-                self.textBrowser.append(u'<font color=red>无效用户!')
+                self.textBrowser.append('<font color=red>无效用户!')
             else:
                 f = CFxFrame()
                 if f.cfx_type and f.cfx_num:
                     cmd = 'ZMSS:IMSI=' + imsi + ':' + f.cfx_type + '=' + f.cfx_num + ';\r'
                     self.send_cmd(cmd)
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=green>操作成功!')
+                    self.textBrowser.append('<font color=green>操作成功!')
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=red>无效操作!')
+                    self.textBrowser.append('<font color=red>无效操作!')
 
         self.close_dev()
 
@@ -482,7 +489,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>连接出错!')
+            self.textBrowser.append('<font color=red>连接出错!')
             return
 
         if self.check_input():
@@ -494,10 +501,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                                   ':CBO=BAOC,CBI=BAIC;\r')
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=red>无效用户!')
+                    self.textBrowser.append('<font color=red>无效用户!')
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=green>操作成功!')
+                    self.textBrowser.append('<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -506,7 +513,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             self.login_dev(cfg['HLR'])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append(u'<font color=red>连接出错!')
+            self.textBrowser.append('<font color=red>连接出错!')
             return
 
         if self.check_input():
@@ -517,10 +524,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
                     self.send_cmd('ZMGD:IMSI=' + imsi + ';\r')
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=red>无效用户!')
+                    self.textBrowser.append('<font color=red>无效用户!')
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append(u'<font color=green>操作成功!')
+                    self.textBrowser.append('<font color=green>操作成功!')
 
         self.close_dev()
 
@@ -528,15 +535,15 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.statusBar().showMessage(' Connecting...')
         host = str(device['host'])
         port = int(device['port'])
-        username = str(device['username'])
-        password = str(device['password'])
+        username = (device['username']).encode('utf-8')
+        password = (device['password']).encode('utf-8')
         try:
             self.telnet.open(host, port)
-            self.telnet.read_until('ENTER USERNAME < ')
-            self.telnet.write(username + '\r')
-            self.telnet.read_until('ENTER PASSWORD < ')
-            self.telnet.write(password + '\r')
-            self.telnet.read_until('< ', 10)
+            self.telnet.read_until(b'ENTER USERNAME < ')
+            self.telnet.write(username + b'\r')
+            self.telnet.read_until(b'ENTER PASSWORD < ')
+            self.telnet.write(password + b'\r')
+            self.telnet.read_until(b'< ', 10)
             self.statusBar().showMessage(' Connected!')
         except:
             self.statusBar().showMessage(' Connect failed!')
@@ -547,10 +554,10 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         self.statusBar().showMessage(' Disconnected')
 
     def send_cmd(self, cmd):
-        self.telnet.write(cmd)
-        result = self.telnet.read_until('< ', 10)
+        self.telnet.write((cmd).encode('utf-8'))
+        result = self.telnet.read_until(b'< ', 10)
         self.save_log(result, logfile)
-        return result
+        return result.decode('utf-8')
 
     def convert_msg(self, data):
         msg = ''
@@ -575,13 +582,13 @@ class DHLRForm(QtGui.QMainWindow, uiform):
             with open(log, 'r') as f:
                 txt = f.read()
         except:
-            txt = u'<font color=red>没有日志!'
+            txt = '<font color=red>没有日志!'
         finally:
             self.textBrowser.setText(txt)
 
     def save_log(self, cmd, log):
         f = open(log, 'a')
-        f.write(cmd.rstrip())
+        f.write((str(cmd)).rstrip())
         f.close()
 
     def init_log(self, log):
@@ -592,7 +599,7 @@ class DHLRForm(QtGui.QMainWindow, uiform):
         except:
             pass
         self.textBrowser.clear()
-        self.textBrowser.append(u'<font color=green>操作成功!')
+        self.textBrowser.append('<font color=green>操作成功!')
 
 
 class CFxFrame(object):
@@ -632,7 +639,7 @@ class CFxFrame(object):
         n = self.num.get().strip() or 'E'
         v = self.var.get().strip()
         if not self.num_validated(n):
-            tkMessageBox.showerror(
+            tkinter.messagebox.showerror(
                 '错误', '呼转号码格式无效!\n例子:\n8613004602000\n86575xxxxxxxx')
         else:
             d = {
@@ -643,12 +650,12 @@ class CFxFrame(object):
                 'OCCF': '隐含呼转'
             }
             if n == 'E':
-                if tkMessageBox.askokcancel('警告', '确认要取消 *' + d[v] + '* 呼转?'):
+                if tkinter.messagebox.askokcancel('警告', '确认要取消 *' + d[v] + '* 呼转?'):
                     self.cfx_num = n
                     self.cfx_type = v
                     self.frame.destroy()
             else:
-                if tkMessageBox.askokcancel(
+                if tkinter.messagebox.askokcancel(
                         '警告', '确认要 *' + d[v] + '* 呼转到 ' + n + ' ?'):
                     self.cfx_num = n
                     self.cfx_type = v
@@ -660,7 +667,7 @@ class Confirm(object):
         self.msg = msg
         self.box = T.Tk()
         self.box.withdraw()
-        if tkMessageBox.askokcancel('警告', msg):
+        if tkinter.messagebox.askokcancel('警告', msg):
             self.comfirmed = 1
             self.box.destroy()
         else:
@@ -669,7 +676,7 @@ class Confirm(object):
 
 
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     DHLRWin = DHLRForm()
     DHLRWin.show()
     app.exec_()
