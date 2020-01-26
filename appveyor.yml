@@ -3,17 +3,11 @@ skip_tags: true
 
 environment:
   matrix:
-    - PYTHON: "C:\Python27"
-      PYTHON_VERSION: "2.7.x"
+    - PYTHON: "C:\Python38"
       PYTHON_ARCH: "32"
-      PyQT: "https://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x32.exe"
 
 install:
-  - pip install -U PyInstaller
-
-before_build:
-  - ps: Start-FileDownload $env:PyQT -FileName .\pyqt4_install.exe
-  - ps: .\pyqt4_install.exe /S
+  - pip install -U PyInstaller PyQt5
 
 build_script:
   - python -m PyInstaller -i DHLR.ico -w DHLR.pyw
