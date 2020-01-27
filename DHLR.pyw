@@ -220,9 +220,12 @@ class DHLRForm(QtWidgets.QMainWindow, uiform):
 
         # To Get ZMNI
         s = self.send_cmd('ZMNI:IMSI=' + db['IMSI'] + ';\r')
-        r = re.compile(('.*?AP NAME \.+ ([\w\.]*)'), re.S | re.M)
+        r = re.compile(('.?AP NAME \.+ ([\w\.]*)'
+                        '.*?AMBR DOWNLINK \.+ (\d+)'
+                        '.*?AMBR UPLINK \.+ (\d+)'), re.S | re.M)
         try:
-            db['AP4'] = ','.join([i for i in r.findall(s)])
+            db['AP4'] = ','.join([('(' + i[1] + '|' + i[2] + ')@' + i[0])
+                                  for i in r.findall(s)])
         except:
             db['AP4'] = 'N'
 
@@ -554,10 +557,10 @@ class DHLRForm(QtWidgets.QMainWindow, uiform):
         self.statusBar().showMessage(' Disconnected')
 
     def send_cmd(self, cmd):
-        self.telnet.write((cmd).encode('utf-8'))
-        result = self.telnet.read_until(b'< ', 10)
+        self.telnet.write(cmd.encode('utf-8'))
+        result = self.telnet.read_until(b'< ', 10).decode('utf-8')
         self.save_log(result, logfile)
-        return result.decode('utf-8')
+        return result
 
     def convert_msg(self, data):
         msg = ''
@@ -650,7 +653,8 @@ class CFxFrame(object):
                 'OCCF': '隐含呼转'
             }
             if n == 'E':
-                if tkinter.messagebox.askokcancel('警告', '确认要取消 *' + d[v] + '* 呼转?'):
+                if tkinter.messagebox.askokcancel('警告',
+                                                  '确认要取消 *' + d[v] + '* 呼转?'):
                     self.cfx_num = n
                     self.cfx_type = v
                     self.frame.destroy()
