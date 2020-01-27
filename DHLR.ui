@@ -37,22 +37,11 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="2">
-     <widget class="QPushButton" name="btnQuery">
-      <property name="font">
-       <font>
-        <pointsize>11</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>查询</string>
-      </property>
-     </widget>
-    </item>
     <item row="2" column="5">
      <widget class="QPushButton" name="btnCFx">
       <property name="font">
        <font>
+        <family>黑体</family>
         <pointsize>11</pointsize>
        </font>
       </property>
@@ -65,7 +54,8 @@
      <widget class="QPushButton" name="btn2on">
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <family>黑体</family>
+        <pointsize>11</pointsize>
        </font>
       </property>
       <property name="text">
@@ -87,8 +77,12 @@
     </item>
     <item row="2" column="4">
      <widget class="QPushButton" name="btnQueryOther">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="font">
        <font>
+        <family>黑体</family>
         <pointsize>11</pointsize>
        </font>
       </property>
@@ -97,20 +91,11 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
-     <widget class="QPushButton" name="btnKickOut">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="text">
-       <string>一键踢线</string>
-      </property>
-     </widget>
-    </item>
     <item row="2" column="3">
      <widget class="QPushButton" name="btnLocUpd">
       <property name="font">
        <font>
+        <family>黑体</family>
         <pointsize>11</pointsize>
        </font>
       </property>
@@ -132,7 +117,8 @@
      <widget class="QPushButton" name="btn3on">
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <family>黑体</family>
+        <pointsize>11</pointsize>
        </font>
       </property>
       <property name="text">
@@ -144,6 +130,7 @@
      <widget class="QPushButton" name="btnStop">
       <property name="font">
        <font>
+        <family>黑体</family>
         <pointsize>11</pointsize>
        </font>
       </property>
@@ -156,7 +143,8 @@
      <widget class="QPushButton" name="btn4off">
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <family>黑体</family>
+        <pointsize>11</pointsize>
        </font>
       </property>
       <property name="text">
@@ -188,7 +176,8 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <family>黑体</family>
+        <pointsize>11</pointsize>
        </font>
       </property>
       <property name="text">
@@ -206,6 +195,7 @@
       </property>
       <property name="font">
        <font>
+        <family>黑体</family>
         <pointsize>11</pointsize>
        </font>
       </property>
@@ -218,7 +208,8 @@
      <widget class="QPushButton" name="btn4on">
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <family>黑体</family>
+        <pointsize>11</pointsize>
        </font>
       </property>
       <property name="text">
@@ -236,11 +227,41 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <family>黑体</family>
+        <pointsize>11</pointsize>
        </font>
       </property>
       <property name="text">
        <string>关闭 3G</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QPushButton" name="btnKickOut">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="font">
+       <font>
+        <family>黑体</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>踢线</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QPushButton" name="btnQuery">
+      <property name="font">
+       <font>
+        <family>黑体</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>查询</string>
       </property>
      </widget>
     </item>
@@ -252,7 +273,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -289,7 +310,6 @@
  </widget>
  <tabstops>
   <tabstop>inputBox</tabstop>
-  <tabstop>btnQuery</tabstop>
   <tabstop>btnLocUpd</tabstop>
   <tabstop>btnQueryOther</tabstop>
   <tabstop>btnCFx</tabstop>
