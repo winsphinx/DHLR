@@ -238,6 +238,14 @@ class DHLRForm(QtWidgets.QMainWindow, uiform):
         except:
             pass
 
+        # To Get ZVIO
+        s = self.send_cmd('ZVIO:IMSI=' + db['IMSI'] + ';\r')
+        r = re.compile(('.*?SIFCID\.+ (\d+)'), re.S | re.M)
+        try:
+            db['SIF'] = ','.join(i for i in r.findall(s))
+        except:
+            db['SIF'] = 'N'
+
         # To Get LAC/CID
         vlr = db['VLR']
         if vlr in list(cfg['VLR'].keys()):
