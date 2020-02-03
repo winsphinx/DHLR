@@ -15,6 +15,7 @@ build_script:
   - "%PYTHON%\\python -m PyInstaller -F -i DHLR.ico -w DHLR.pyw"
 
 after_build:
+  - ps: rm DHLR.spec
   - ps: cp DHLR.* dist\
   - ps: cd dist\
   - ps: 7z a ..\DHLR.zip *
