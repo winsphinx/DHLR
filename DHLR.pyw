@@ -10,25 +10,22 @@ import telnetlib
 import tkinter as T
 import tkinter.messagebox
 
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
-
-# from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.uic import loadUiType
 
 path = os.path.dirname(sys.argv[0])
 uifile = os.path.join(path, 'DHLR.ui')
 logfile = os.path.join(path, 'DHLR.log')
 cfgfile = os.path.join(path, 'DHLR.json')
-uiform = uic.loadUiType(uifile)[0]
-# Ui_MainWindow, QtBaseClass=uic.loadUiType(uifile)
-# Ui_Dialog=uic.loadUiType(uifile)
+uiform = loadUiType(uifile)[0]
 
 with codecs.open(cfgfile, 'r', 'utf-8') as f:
     cfg = json.load(f)
 
 
-class DHLRForm(QtWidgets.QMainWindow, uiform):
+class DHLRForm(QMainWindow, uiform):
     def __init__(self, parent=None, telnet=telnetlib.Telnet()):
-        QtWidgets.QMainWindow.__init__(self, parent)
+        QMainWindow.__init__(self, parent)
         self.setupUi(self)
         self.statusBar().showMessage(' Ready')
         self.telnet = telnet
@@ -688,7 +685,7 @@ class Confirm(object):
 
 
 if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
+    app =QApplication(sys.argv)
     DHLRWin = DHLRForm()
     DHLRWin.show()
     app.exec_()
