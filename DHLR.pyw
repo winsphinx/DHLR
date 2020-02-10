@@ -170,11 +170,13 @@ class DHLRForm(QMainWindow, uiform):
 
         # To get ZMQO
         s = self.send_cmd('ZMQO:IMSI=' + db['IMSI'] + ':DISP=CA;\r')
-        r = ('.*SERVICE CONTROL POINT ADDRESS\.+(?P<SCP>\d{10})')
+        r = re.compile(('.*?DP.....DETECTION POINT\.+(\w+)'
+                      '.*?SCP....SERVICE CONTROL POINT ADDRESS\.+(\d+)') ,re.S | re.M)
         try:
-            db.update(self.match_data(s, r))
+            db['SCP'] = ','.join(['='.join(i) for i in r.findall(s)])
         except:
             db['SCP'] = 'N'
+
 
         # To Get ZMBO
         s = self.send_cmd('ZMBO:IMSI=' + db['IMSI'] + ';\r')
