@@ -171,12 +171,12 @@ class DHLRForm(QMainWindow, uiform):
         # To get ZMQO
         s = self.send_cmd('ZMQO:IMSI=' + db['IMSI'] + ':DISP=CA;\r')
         r = re.compile(('.*?DP.....DETECTION POINT\.+(\w+)'
-                      '.*?SCP....SERVICE CONTROL POINT ADDRESS\.+(\d+)') ,re.S | re.M)
+                        '.*?SCP....SERVICE CONTROL POINT ADDRESS\.+(\d+)'),
+                       re.S | re.M)
         try:
             db['SCP'] = ','.join(['='.join(i) for i in r.findall(s)])
         except:
             db['SCP'] = 'N'
-
 
         # To Get ZMBO
         s = self.send_cmd('ZMBO:IMSI=' + db['IMSI'] + ';\r')
@@ -195,9 +195,12 @@ class DHLRForm(QMainWindow, uiform):
         except:
             pass
         r = re.compile(('.*?QUALITY OF SERVICES PROFILE . (\d+)'
-                        '.*?APN \.+ ([\w\.]*)'), re.S | re.M)
+                        '.*?APN \.+ ([\w\.]*)'
+                        '.*?PDP CHARGING CHARACTERISTIC \. ([N\d]*)'),
+                       re.S | re.M)
         try:
-            db['QOS'] = ','.join(['@'.join(i) for i in r.findall(s)])
+            db['QOS'] = ','.join([('(' + i[0] + '@' + i[1] + ')#' + i[2])
+                                  for i in r.findall(s)])
         except:
             db['QOS'] = 'N'
 
@@ -687,7 +690,7 @@ class Confirm(object):
 
 
 if __name__ == '__main__':
-    app =QApplication(sys.argv)
+    app = QApplication(sys.argv)
     DHLRWin = DHLRForm()
     DHLRWin.show()
     app.exec_()
