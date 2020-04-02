@@ -9,7 +9,7 @@ environment:
 
 install:
   - "%PYTHON%\\python -m pip install --upgrade pip"
-  - "%PYTHON%\\python -m pip install -U PyInstaller PyQt5"
+  - "%PYTHON%\\python -m pip install -U PyInstaller PyQt5==5.13.2"
 
 build_script:
   - "%PYTHON%\\python -m PyInstaller -F -i DHLR.ico -w DHLR.pyw"
