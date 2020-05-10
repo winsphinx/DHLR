@@ -601,7 +601,7 @@ class DHLRForm(QMainWindow, uiform):
 
     def save_log(self, cmd, log):
         f = open(log, 'a')
-        f.write((str(cmd)).rstrip())
+        f.write((str(cmd)).replace('\r\n', '\n'))
         f.close()
 
     def init_log(self, log):
