@@ -17,6 +17,7 @@ path = os.path.dirname(sys.argv[0])
 uifile = os.path.join(path, 'DHLR.ui')
 logfile = os.path.join(path, 'DHLR.log')
 cfgfile = os.path.join(path, 'DHLR.json')
+vlrfile = os.path.join(path, 'VLR.txt')
 uiform = loadUiType(uifile)[0]
 
 with codecs.open(cfgfile, 'r', 'utf-8') as f:
@@ -258,6 +259,16 @@ class DHLRForm(QMainWindow, uiform):
             except:
                 pass
 
+        # To Get VLRNAME
+        vlr = db['VLR']
+        places = []
+        with codecs.open(vlrfile, 'r', 'utf-8') as f:
+            for line in f:
+                places.append(line.strip().split())
+        vlrdict = {x: y for [x, y] in places}
+        db['PLACE'] = vlr + ' (' + vlrdict.get(vlr, '未知') + ')'
+
+        # To create and convert data
         self.textBrowser.clear()
         self.textBrowser.append(self.convert_msg(db))
         self.close_dev()
