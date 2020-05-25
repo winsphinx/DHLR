@@ -17,6 +17,7 @@ build_script:
 after_build:
   - ps: rm DHLR.spec
   - ps: cp DHLR.* dist\
+  - ps: cp VLR.* dist\
   - ps: cd dist\
   - ps: 7z a ..\DHLR.zip *
 
