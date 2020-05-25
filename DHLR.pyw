@@ -451,6 +451,8 @@ class DHLRForm(QMainWindow, uiform):
                     self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=N;\r')
                     self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=Y;\r')
                     self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=N;\r')
+                    self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=DENIED;\r')
+                    self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=GRANTED;\r')
                 except:
                     self.textBrowser.clear()
                     self.textBrowser.append('<font color=red>无效用户!')
