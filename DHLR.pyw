@@ -613,9 +613,12 @@ class DHLRForm(QMainWindow, uiform):
             self.textBrowser.setText(txt)
 
     def save_log(self, cmd, log):
-        f = open(log, 'a')
-        f.write((str(cmd)).replace('\r\n', '\n'))
-        f.close()
+        try:
+            f = open(log, 'a')
+            f.write((str(cmd)).replace('\r\n', '\n'))
+            f.close()
+        except:
+            pass
 
     def init_log(self, log):
         try:
