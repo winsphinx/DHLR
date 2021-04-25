@@ -14,13 +14,13 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.uic import loadUiType
 
 path = os.path.dirname(sys.argv[0])
-uifile = os.path.join(path, 'DHLR.ui')
-logfile = os.path.join(path, 'DHLR.log')
-cfgfile = os.path.join(path, 'DHLR.json')
-vlrfile = os.path.join(path, 'VLR.txt')
+uifile = os.path.join(path, "DHLR.ui")
+logfile = os.path.join(path, "DHLR.log")
+cfgfile = os.path.join(path, "DHLR.json")
+vlrfile = os.path.join(path, "VLR.txt")
 uiform = loadUiType(uifile)[0]
 
-with codecs.open(cfgfile, 'r', 'utf-8') as f:
+with codecs.open(cfgfile, "r", "utf-8") as f:
     cfg = json.load(f)
 
 
@@ -28,7 +28,7 @@ class DHLRForm(QMainWindow, uiform):
     def __init__(self, parent=None, telnet=telnetlib.Telnet()):
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
-        self.statusBar().showMessage(' Ready')
+        self.statusBar().showMessage(" Ready")
         self.telnet = telnet
         self.btnQuery.clicked.connect(self.query_user)
         self.btnLocUpd.clicked.connect(self.update_location)
@@ -51,222 +51,254 @@ class DHLRForm(QMainWindow, uiform):
 
     def check_input(self):
         num = str(self.inputBox.text()).strip()
-        if num.isdigit() and num.startswith('861') and len(num) == 13:
-            return ('M', num)
-        elif num.isdigit() and num.startswith('4600') and len(num) == 15:
-            return ('I', num)
-        elif num == '':
+        if num.isdigit() and num.startswith("861") and len(num) == 13:
+            return ("M", num)
+        elif num.isdigit() and num.startswith("4600") and len(num) == 15:
+            return ("I", num)
+        elif num == "":
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>请输号码!')
+            self.textBrowser.append("<font color=red>请输号码!")
             return
         else:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>格式无效!')
+            self.textBrowser.append("<font color=red>格式无效!")
             return
 
     def get_imsi(self, flag, num):
-        if flag == 'M':
-            cmd = 'ZMIO:MSISDN=' + num + ';\r'
-        elif flag == 'I':
-            cmd = 'ZMIO:IMSI=' + num + ';\r'
+        if flag == "M":
+            cmd = "ZMIO:MSISDN=" + num + ";\r"
+        elif flag == "I":
+            cmd = "ZMIO:IMSI=" + num + ";\r"
         else:
             return
 
         s = self.send_cmd(cmd)
-        if not re.search('FAILED', s):
-            r = re.compile('(\d{15})', re.S)
+        if not re.search("FAILED", s):
+            r = re.compile("(\d{15})", re.S)
             try:
                 return r.search(s).group()
             except:
                 raise
 
     def get_vlr_info(self, msisdn, vlr):
-        self.statusBar().showMessage(' Connected!')
-        host = cfg['VLR'][vlr]
+        self.statusBar().showMessage(" Connected!")
+        host = cfg["VLR"][vlr]
         server = telnetlib.Telnet(host)
-        server.read_until(b'ENTER USERNAME < ')
-        server.write(str(cfg['Login']['username']) + b'\r')
-        server.read_until(b'ENTER PASSWORD < ')
-        server.write(str(cfg['Login']['password']) + b'\r')
-        server.read_until('< ', 10)
-        server.write(b'ZMVO:MSISDN=' + msisdn + b';\r')
-        s = server.read_until(b'< ', 10)
-        server.write(b'ZMWI:MSISDN=' + msisdn + b';\r')
-        s += server.read_until(b'< ', 10)
+        server.read_until(b"ENTER USERNAME < ")
+        server.write(str(cfg["Login"]["username"]) + b"\r")
+        server.read_until(b"ENTER PASSWORD < ")
+        server.write(str(cfg["Login"]["password"]) + b"\r")
+        server.read_until("< ", 10)
+        server.write(b"ZMVO:MSISDN=" + msisdn + b";\r")
+        s = server.read_until(b"< ", 10)
+        server.write(b"ZMWI:MSISDN=" + msisdn + b";\r")
+        s += server.read_until(b"< ", 10)
         server.close()
-        self.statusBar().showMessage(' Disconnected')
-        if not re.search('FAILED', s):
-            r = re.compile((
-                '.*INTERNATIONAL MOBILE SUBSCRIBER IDENTITY \.+ (?P<IMSI>\d{15})'
-                '.*LOCATION AREA CODE OF IMSI \.+ (?P<LAC>[\w\/]*)'
-                '.*RADIO ACCESS INFO \.+ (?P<NET>\w*)'
-                '.*IMSI DETACH FLAG \.+ (?P<DEA>[YN])'
-                '.*LAST ACTIVATE DATE \.+ (?P<TIME>[\d\:\- ]*)'
-                '.*LAST USED CELL ID \.+ (?P<CID>[\w\/]*)'
-                '.*INTERNATIONAL MOBILE STATION EQUIPMENT IDENTITY \.+ (?P<IMEI>\d{14})'
-            ), re.S)
+        self.statusBar().showMessage(" Disconnected")
+        if not re.search("FAILED", s):
+            r = re.compile(
+                (
+                    ".*INTERNATIONAL MOBILE SUBSCRIBER IDENTITY \.+ (?P<IMSI>\d{15})"
+                    ".*LOCATION AREA CODE OF IMSI \.+ (?P<LAC>[\w\/]*)"
+                    ".*RADIO ACCESS INFO \.+ (?P<NET>\w*)"
+                    ".*IMSI DETACH FLAG \.+ (?P<DEA>[YN])"
+                    ".*LAST ACTIVATE DATE \.+ (?P<TIME>[\d\:\- ]*)"
+                    ".*LAST USED CELL ID \.+ (?P<CID>[\w\/]*)"
+                    ".*INTERNATIONAL MOBILE STATION EQUIPMENT IDENTITY \.+ (?P<IMEI>\d{14})"
+                ),
+                re.S,
+            )
             imsi, lac, net, dea, time, cid, imei = r.match(s).groups()
-            if lac != 'N':
-                lac = lac.split('/')[1][:-1]
-            if cid != 'N':
-                cid = cid.split('/')[1][:-1]
+            if lac != "N":
+                lac = lac.split("/")[1][:-1]
+            if cid != "N":
+                cid = cid.split("/")[1][:-1]
             return (imsi, net, lac, cid, dea, time, imei)
 
     def query_user(self):
         try:
-            self.login_dev(cfg['HLR'])
+            self.login_dev(cfg["HLR"])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>连接出错!')
+            self.textBrowser.append("<font color=red>连接出错!")
             return
 
         if self.check_input():
             flag, num = self.check_input()
-            if flag == 'M':
-                cmd = 'ZMIO:MSISDN=' + num + ';\r'
-            elif flag == 'I':
-                cmd = 'ZMIO:IMSI=' + num + ';\r'
+            if flag == "M":
+                cmd = "ZMIO:MSISDN=" + num + ";\r"
+            elif flag == "I":
+                cmd = "ZMIO:IMSI=" + num + ";\r"
         else:
             self.close_dev()
             return
 
         # To get ZMIO
         s = self.send_cmd(cmd)
-        r = ('.*INTERNATIONAL MOBILE SUBSCRIBER IDENTITY \.+ (?P<IMSI>\d{15})'
-             '.*MOBILE STATION ISDN NUMBER \.+ (?P<MSISDN>\d{13})'
-             '.*SERVICE AREA OF MSISDN \.+ (?P<SAM>\w{3})'
-             '.*VLR-ADDRESS \.+ (?P<VLR>\d*)'
-             '.*ROAMING PROFILE INDEX \.+ (?P<RP>\d*)'
-             '.*ROAMING TO UTRAN RESTRICTED \.+ (?P<URE>[YN])'
-             '.*ROAMING TO GERAN RESTRICTED \.+ (?P<GRE>[YN])'
-             '.*LATEST LOCATION UPDATE\s+(?P<VLRT>[T0-9\:\+\-\.]*)')
+        r = (
+            ".*INTERNATIONAL MOBILE SUBSCRIBER IDENTITY \.+ (?P<IMSI>\d{15})"
+            ".*MOBILE STATION ISDN NUMBER \.+ (?P<MSISDN>\d{13})"
+            ".*SERVICE AREA OF MSISDN \.+ (?P<SAM>\w{3})"
+            ".*VLR-ADDRESS \.+ (?P<VLR>\d*)"
+            ".*ROAMING PROFILE INDEX \.+ (?P<RP>\d*)"
+            ".*ROAMING TO UTRAN RESTRICTED \.+ (?P<URE>[YN])"
+            ".*ROAMING TO GERAN RESTRICTED \.+ (?P<GRE>[YN])"
+            ".*LATEST LOCATION UPDATE\s+(?P<VLRT>[T0-9\:\+\-\.]*)"
+        )
         try:
             db = self.match_data(s, r)
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>无效用户!')
+            self.textBrowser.append("<font color=red>无效用户!")
             self.close_dev()
             return
 
         # To get ZMSO
-        s = self.send_cmd('ZMSO:IMSI=' + db['IMSI'] + ':BSERV=T11;\r')
-        r = ('.*CALL HOLD \.+ (?P<HOLD>[YN])'
-             '.*CALLING LINE ID PRESENTATION \.+ (?P<CLIP>[YNO])'
-             '.*CALLING LINE ID RESTRICTION \.+ (?P<CLIR>\w*)'
-             '.*MULTI PARTY SERVICE \.* (?P<MTPY>[YN])'
-             '.*SELECTIVE RINGBACK TONE \.* (?P<SRBT>[YN])'
-             '.*BARRING OF ALL MTC \.*  (?P<BAIC>[YNAD ]*)'
-             '.*BARRING OF ALL MOC \.*  (?P<BAOC>[YNAD ]*)'
-             '.*BARRING OF INTERNATIONAL MOC \.*  (?P<BOIC>[YNAD ]*)'
-             '.*CALL FWD UNCONDITIONAL *\.+ (?P<CFU>[\w ]*)'
-             '.*CALL FWD ON SUBSCRIBER BUSY *\.+ (?P<CFB>[\w ]*)'
-             '.*CALL FWD ON SUBS. NOT REACHABLE  (?P<CFNR>[\w ]*)'
-             '.*CALL FWD ON NO REPLY \.+ (?P<CFNA>[\w ]*)'
-             '.*OPERATOR CONTROLLED CALL FWD \.+ (?P<OCCF>[\w ]*)'
-             '.*CALL WAITING \.* (?P<CW>[YNAD ]*)')
+        s = self.send_cmd("ZMSO:IMSI=" + db["IMSI"] + ":BSERV=T11;\r")
+        r = (
+            ".*CALL HOLD \.+ (?P<HOLD>[YN])"
+            ".*CALLING LINE ID PRESENTATION \.+ (?P<CLIP>[YNO])"
+            ".*CALLING LINE ID RESTRICTION \.+ (?P<CLIR>\w*)"
+            ".*MULTI PARTY SERVICE \.* (?P<MTPY>[YN])"
+            ".*SELECTIVE RINGBACK TONE \.* (?P<SRBT>[YN])"
+            ".*BARRING OF ALL MTC \.*  (?P<BAIC>[YNAD ]*)"
+            ".*BARRING OF ALL MOC \.*  (?P<BAOC>[YNAD ]*)"
+            ".*BARRING OF INTERNATIONAL MOC \.*  (?P<BOIC>[YNAD ]*)"
+            ".*CALL FWD UNCONDITIONAL *\.+ (?P<CFU>[\w ]*)"
+            ".*CALL FWD ON SUBSCRIBER BUSY *\.+ (?P<CFB>[\w ]*)"
+            ".*CALL FWD ON SUBS. NOT REACHABLE  (?P<CFNR>[\w ]*)"
+            ".*CALL FWD ON NO REPLY \.+ (?P<CFNA>[\w ]*)"
+            ".*OPERATOR CONTROLLED CALL FWD \.+ (?P<OCCF>[\w ]*)"
+            ".*CALL WAITING \.* (?P<CW>[YNAD ]*)"
+        )
         try:
             db.update(self.match_data(s, r))
         except:
             pass
 
         # To get ZMQO
-        s = self.send_cmd('ZMQO:IMSI=' + db['IMSI'] + ':DISP=CA;\r')
-        r = re.compile(('.*?DP.....DETECTION POINT\.+(\w+)'
-                        '.*?SCP....SERVICE CONTROL POINT ADDRESS\.+(\d+)'),
-                       re.S | re.M)
+        s = self.send_cmd("ZMQO:IMSI=" + db["IMSI"] + ":DISP=CA;\r")
+        r = re.compile(
+            (
+                ".*?DP.....DETECTION POINT\.+(\w+)"
+                ".*?SCP....SERVICE CONTROL POINT ADDRESS\.+(\d+)"
+            ),
+            re.S | re.M,
+        )
         try:
-            db['SCP'] = ','.join(['='.join(i) for i in r.findall(s)])
+            db["SCP"] = ",".join(["=".join(i) for i in r.findall(s)])
         except:
-            db['SCP'] = 'N'
+            db["SCP"] = "N"
 
         # To Get ZMBO
-        s = self.send_cmd('ZMBO:IMSI=' + db['IMSI'] + ';\r')
-        r = re.compile(('([\w]{3}),000'), re.S | re.M)
+        s = self.send_cmd("ZMBO:IMSI=" + db["IMSI"] + ";\r")
+        r = re.compile(("([\w]{3}),000"), re.S | re.M)
         try:
-            db['SERV'] = ','.join(r.findall(s))
+            db["SERV"] = ",".join(r.findall(s))
         except:
             pass
 
         # To get ZMNO
-        s = self.send_cmd('ZMNO:IMSI=' + db['IMSI'] + ';\r')
-        r = ('.*SGSN ADDRESS \.+ (?P<SGSN>\d*)'
-             '.*NETWORK ACCESS \.+ (?P<NWACC>\w*)')
+        s = self.send_cmd("ZMNO:IMSI=" + db["IMSI"] + ";\r")
+        r = ".*SGSN ADDRESS \.+ (?P<SGSN>\d*)" ".*NETWORK ACCESS \.+ (?P<NWACC>\w*)"
         try:
             db.update(self.match_data(s, r))
         except:
             pass
-        r = re.compile(('.*?QUALITY OF SERVICES PROFILE . (\d+)'
-                        '.*?APN \.+ ([\w\.]*)'
-                        '.*?PDP CHARGING CHARACTERISTIC \. ([N\d]*)'),
-                       re.S | re.M)
+        r = re.compile(
+            (
+                ".*?QUALITY OF SERVICES PROFILE . (\d+)"
+                ".*?APN \.+ ([\w\.]*)"
+                ".*?PDP CHARGING CHARACTERISTIC \. ([N\d]*)"
+            ),
+            re.S | re.M,
+        )
         try:
-            db['QOS'] = ','.join([('(' + i[0] + '@' + i[1] + ')#' + i[2])
-                                  for i in r.findall(s)])
+            db["QOS"] = ",".join(
+                [("(" + i[0] + "@" + i[1] + ")#" + i[2]) for i in r.findall(s)]
+            )
         except:
-            db['QOS'] = 'N'
+            db["QOS"] = "N"
 
         # To Get ZMNF
-        s = self.send_cmd('ZMNF:IMSI=' + db['IMSI'] + ';\r')
-        r = ('.*EPS STATUS \.+ (?P<EPS>\w*)'
-             '.*MME ADDRESS PRESENT\.+ (?P<MME>[YN])'
-             '.*AMBR DOWNLINK \.+ (?P<DN>\d*)'
-             '.*AMBR UPLINK \.+ (?P<UP>\d*)'
-             '.*LATEST LTE LOCATION UPDATE .. (?P<LTET>[T0-9\:\+\-\.]*)')
+        s = self.send_cmd("ZMNF:IMSI=" + db["IMSI"] + ";\r")
+        r = (
+            ".*EPS STATUS \.+ (?P<EPS>\w*)"
+            ".*MME ADDRESS PRESENT\.+ (?P<MME>[YN])"
+            ".*AMBR DOWNLINK \.+ (?P<DN>\d*)"
+            ".*AMBR UPLINK \.+ (?P<UP>\d*)"
+            ".*LATEST LTE LOCATION UPDATE .. (?P<LTET>[T0-9\:\+\-\.]*)"
+        )
         try:
             db.update(self.match_data(s, r))
         except:
             pass
         else:
-            db['LTE'] = 'DN:' + db['DN'] + ',UP:' + db['UP']
-            db.pop('DN')
-            db.pop('UP')
+            db["LTE"] = "DN:" + db["DN"] + ",UP:" + db["UP"]
+            db.pop("DN")
+            db.pop("UP")
 
         # To Get ZMNI
-        s = self.send_cmd('ZMNI:IMSI=' + db['IMSI'] + ';\r')
-        r = re.compile(('.?AP NAME \.+ ([\w\.]*)'
-                        '.*?AMBR DOWNLINK \.+ (\d+)'
-                        '.*?AMBR UPLINK \.+ (\d+)'), re.S | re.M)
+        s = self.send_cmd("ZMNI:IMSI=" + db["IMSI"] + ";\r")
+        r = re.compile(
+            (
+                ".?AP NAME \.+ ([\w\.]*)"
+                ".*?AMBR DOWNLINK \.+ (\d+)"
+                ".*?AMBR UPLINK \.+ (\d+)"
+            ),
+            re.S | re.M,
+        )
         try:
-            db['AP4'] = ','.join([('(' + i[1] + '|' + i[2] + ')@' + i[0])
-                                  for i in r.findall(s)])
+            db["AP4"] = ",".join(
+                [("(" + i[1] + "|" + i[2] + ")@" + i[0]) for i in r.findall(s)]
+            )
         except:
-            db['AP4'] = 'N'
+            db["AP4"] = "N"
 
         # To Get ZMGO
-        s = self.send_cmd('ZMGO:IMSI=' + db['IMSI'] + ';\r')
-        r = ('.*BAOC ... BARRING OF ALL OUTGOING CALLS \.+ (?P<BAOCODB>[YN])'
-             '.*BAIC ... BARRING OF ALL INCOMING CALLS \.+ (?P<BAICODB>[YN])')
+        s = self.send_cmd("ZMGO:IMSI=" + db["IMSI"] + ";\r")
+        r = (
+            ".*BAOC ... BARRING OF ALL OUTGOING CALLS \.+ (?P<BAOCODB>[YN])"
+            ".*BAIC ... BARRING OF ALL INCOMING CALLS \.+ (?P<BAICODB>[YN])"
+        )
         try:
             db.update(self.match_data(s, r))
         except:
             pass
 
         # To Get ZVIO
-        s = self.send_cmd('ZVIO:IMSI=' + db['IMSI'] + ';\r')
-        r = re.compile(('.*?SIFCID\.+ (\d+)'), re.S | re.M)
+        s = self.send_cmd("ZVIO:IMSI=" + db["IMSI"] + ";\r")
+        r = re.compile((".*?SIFCID\.+ (\d+)"), re.S | re.M)
         try:
-            db['SIF'] = ','.join(i for i in r.findall(s))
+            db["SIF"] = ",".join(i for i in r.findall(s))
         except:
-            db['SIF'] = 'N'
+            db["SIF"] = "N"
 
         # To Get LAC/CID
-        vlr = db['VLR']
-        if vlr in list(cfg['VLR'].keys()):
-            msisdn = db['MSISDN']
+        vlr = db["VLR"]
+        if vlr in list(cfg["VLR"].keys()):
+            msisdn = db["MSISDN"]
             try:
-                _, db['NET'], db['LAC'], db['CID'], db['DEA'], db['TIME'], db[
-                    'IMEI'] = self.get_vlr_info(msisdn, vlr)
+                (
+                    _,
+                    db["NET"],
+                    db["LAC"],
+                    db["CID"],
+                    db["DEA"],
+                    db["TIME"],
+                    db["IMEI"],
+                ) = self.get_vlr_info(msisdn, vlr)
             except:
                 pass
 
         # To Get VLRNAME
-        vlr = db['VLR']
+        vlr = db["VLR"]
         places = []
-        with codecs.open(vlrfile, 'r', 'utf-8') as f:
+        with codecs.open(vlrfile, "r", "utf-8") as f:
             for line in f:
                 places.append(line.strip().split())
         vlrdict = {x: y for [x, y] in places}
-        db['PLACE'] = vlr + ' (' + vlrdict.get(vlr, '未知') + ')'
+        db["PLACE"] = vlr + " (" + vlrdict.get(vlr, "未知") + ")"
 
         # To create and convert data
         self.textBrowser.clear()
@@ -275,190 +307,190 @@ class DHLRForm(QMainWindow, uiform):
 
     def update_location(self):
         try:
-            self.login_dev(cfg['HLR'])
+            self.login_dev(cfg["HLR"])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>连接出错!')
+            self.textBrowser.append("<font color=red>连接出错!")
             return
 
         if self.check_input():
             flag, num = self.check_input()
-            if Confirm('确认对 ' + num + ' 做位置更新?').comfirmed:
+            if Confirm("确认对 " + num + " 做位置更新?").comfirmed:
                 try:
                     imsi = self.get_imsi(flag, num)
-                    self.send_cmd('ZMIM:IMSI=' + imsi + ':VLR=N;\r')
+                    self.send_cmd("ZMIM:IMSI=" + imsi + ":VLR=N;\r")
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=red>无效用户!')
+                    self.textBrowser.append("<font color=red>无效用户!")
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=green>操作成功!')
+                    self.textBrowser.append("<font color=green>操作成功!")
 
         self.close_dev()
 
     def four_off(self):
         try:
-            self.login_dev(cfg['HLR'])
+            self.login_dev(cfg["HLR"])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>连接出错!')
+            self.textBrowser.append("<font color=red>连接出错!")
             return
 
         if self.check_input():
             flag, num = self.check_input()
-            if Confirm('确认对 ' + num + ' 做降网?').comfirmed:
+            if Confirm("确认对 " + num + " 做降网?").comfirmed:
                 try:
                     imsi = self.get_imsi(flag, num)
-                    self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=DENIED;\r')
+                    self.send_cmd("ZMNE:IMSI=" + imsi + ":STATUS=DENIED;\r")
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=red>无效用户!')
+                    self.textBrowser.append("<font color=red>无效用户!")
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=green>操作成功!')
+                    self.textBrowser.append("<font color=green>操作成功!")
 
         self.close_dev()
 
     def four_on(self):
         try:
-            self.login_dev(cfg['HLR'])
+            self.login_dev(cfg["HLR"])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>连接出错!')
+            self.textBrowser.append("<font color=red>连接出错!")
             return
 
         if self.check_input():
             flag, num = self.check_input()
-            if Confirm('确认对 ' + num + ' 做升网?').comfirmed:
+            if Confirm("确认对 " + num + " 做升网?").comfirmed:
                 try:
                     imsi = self.get_imsi(flag, num)
-                    self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=GRANTED;\r')
+                    self.send_cmd("ZMNE:IMSI=" + imsi + ":STATUS=GRANTED;\r")
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=red>无效用户!')
+                    self.textBrowser.append("<font color=red>无效用户!")
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=green>操作成功!')
+                    self.textBrowser.append("<font color=green>操作成功!")
 
         self.close_dev()
 
     def three_off(self):
         try:
-            self.login_dev(cfg['HLR'])
+            self.login_dev(cfg["HLR"])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>连接出错!')
+            self.textBrowser.append("<font color=red>连接出错!")
             return
 
         if self.check_input():
             flag, num = self.check_input()
-            if Confirm('确认对 ' + num + ' 做降网?').comfirmed:
+            if Confirm("确认对 " + num + " 做降网?").comfirmed:
                 try:
                     imsi = self.get_imsi(flag, num)
-                    self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=Y;\r')
+                    self.send_cmd("ZMIM:IMSI=" + imsi + ":UREST=Y;\r")
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=red>无效用户!')
+                    self.textBrowser.append("<font color=red>无效用户!")
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=green>操作成功!')
+                    self.textBrowser.append("<font color=green>操作成功!")
 
         self.close_dev()
 
     def three_on(self):
         try:
-            self.login_dev(cfg['HLR'])
+            self.login_dev(cfg["HLR"])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>连接出错!')
+            self.textBrowser.append("<font color=red>连接出错!")
             return
 
         if self.check_input():
             flag, num = self.check_input()
-            if Confirm('确认对 ' + num + ' 做升网?').comfirmed:
+            if Confirm("确认对 " + num + " 做升网?").comfirmed:
                 try:
                     imsi = self.get_imsi(flag, num)
-                    self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=N;\r')
+                    self.send_cmd("ZMIM:IMSI=" + imsi + ":UREST=N;\r")
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=red>无效用户!')
+                    self.textBrowser.append("<font color=red>无效用户!")
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=green>操作成功!')
+                    self.textBrowser.append("<font color=green>操作成功!")
 
         self.close_dev()
 
     def two_off(self):
         try:
-            self.login_dev(cfg['HLR'])
+            self.login_dev(cfg["HLR"])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>连接出错!')
+            self.textBrowser.append("<font color=red>连接出错!")
             return
 
         if self.check_input():
             flag, num = self.check_input()
-            if Confirm('确认对 ' + num + ' 做降网?').comfirmed:
+            if Confirm("确认对 " + num + " 做降网?").comfirmed:
                 try:
                     imsi = self.get_imsi(flag, num)
-                    self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=Y;\r')
+                    self.send_cmd("ZMIM:IMSI=" + imsi + ":GREST=Y;\r")
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=red>无效用户!')
+                    self.textBrowser.append("<font color=red>无效用户!")
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=green>操作成功!')
+                    self.textBrowser.append("<font color=green>操作成功!")
 
         self.close_dev()
 
     def two_on(self):
         try:
-            self.login_dev(cfg['HLR'])
+            self.login_dev(cfg["HLR"])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>连接出错!')
+            self.textBrowser.append("<font color=red>连接出错!")
             return
 
         if self.check_input():
             flag, num = self.check_input()
-            if Confirm('确认对 ' + num + ' 做升网?').comfirmed:
+            if Confirm("确认对 " + num + " 做升网?").comfirmed:
                 try:
                     imsi = self.get_imsi(flag, num)
-                    self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=N;\r')
+                    self.send_cmd("ZMIM:IMSI=" + imsi + ":GREST=N;\r")
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=red>无效用户!')
+                    self.textBrowser.append("<font color=red>无效用户!")
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=green>操作成功!')
+                    self.textBrowser.append("<font color=green>操作成功!")
 
         self.close_dev()
 
     def kick(self):
         try:
-            self.login_dev(cfg['HLR'])
+            self.login_dev(cfg["HLR"])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>连接出错!')
+            self.textBrowser.append("<font color=red>连接出错!")
             return
 
         if self.check_input():
             flag, num = self.check_input()
-            if Confirm('确认对 ' + num + ' 做踢线?').comfirmed:
+            if Confirm("确认对 " + num + " 做踢线?").comfirmed:
                 try:
                     imsi = self.get_imsi(flag, num)
-                    self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=Y;\r')
-                    self.send_cmd('ZMIM:IMSI=' + imsi + ':UREST=N;\r')
-                    self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=Y;\r')
-                    self.send_cmd('ZMIM:IMSI=' + imsi + ':GREST=N;\r')
-                    self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=DENIED;\r')
-                    self.send_cmd('ZMNE:IMSI=' + imsi + ':STATUS=GRANTED;\r')
+                    self.send_cmd("ZMIM:IMSI=" + imsi + ":UREST=Y;\r")
+                    self.send_cmd("ZMIM:IMSI=" + imsi + ":UREST=N;\r")
+                    self.send_cmd("ZMIM:IMSI=" + imsi + ":GREST=Y;\r")
+                    self.send_cmd("ZMIM:IMSI=" + imsi + ":GREST=N;\r")
+                    self.send_cmd("ZMNE:IMSI=" + imsi + ":STATUS=DENIED;\r")
+                    self.send_cmd("ZMNE:IMSI=" + imsi + ":STATUS=GRANTED;\r")
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=red>无效用户!')
+                    self.textBrowser.append("<font color=red>无效用户!")
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=green>操作成功!')
+                    self.textBrowser.append("<font color=green>操作成功!")
 
         self.close_dev()
 
@@ -467,11 +499,18 @@ class DHLRForm(QMainWindow, uiform):
         if self.check_input():
             _, msisdn = self.check_input()
             found = 0
-            for vlr in list(cfg['VLR'].keys()):
-                db['VLR'] = vlr
+            for vlr in list(cfg["VLR"].keys()):
+                db["VLR"] = vlr
                 try:
-                    db['IMSI'], db['NET'], db['LAC'], db['CID'], db['DEA'], db[
-                        'TIME'], db['IMEI'] = self.get_vlr_info(msisdn, vlr)
+                    (
+                        db["IMSI"],
+                        db["NET"],
+                        db["LAC"],
+                        db["CID"],
+                        db["DEA"],
+                        db["TIME"],
+                        db["IMEI"],
+                    ) = self.get_vlr_info(msisdn, vlr)
                 except:
                     pass
                 else:
@@ -480,14 +519,14 @@ class DHLRForm(QMainWindow, uiform):
                     self.textBrowser.append(self.convert_msg(db))
             if not found:
                 self.textBrowser.clear()
-                self.textBrowser.append('<font color=red>没有位置信息!')
+                self.textBrowser.append("<font color=red>没有位置信息!")
 
     def call_forward(self):
         try:
-            self.login_dev(cfg['HLR'])
+            self.login_dev(cfg["HLR"])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>连接出错!')
+            self.textBrowser.append("<font color=red>连接出错!")
             return
 
         if self.check_input():
@@ -496,103 +535,104 @@ class DHLRForm(QMainWindow, uiform):
                 imsi = self.get_imsi(flag, num)
             except:
                 self.textBrowser.clear()
-                self.textBrowser.append('<font color=red>无效用户!')
+                self.textBrowser.append("<font color=red>无效用户!")
             else:
                 f = CFxFrame()
                 if f.cfx_type and f.cfx_num:
-                    cmd = 'ZMSS:IMSI=' + imsi + ':' + f.cfx_type + '=' + f.cfx_num + ';\r'
+                    cmd = (
+                        "ZMSS:IMSI=" + imsi + ":" + f.cfx_type + "=" + f.cfx_num + ";\r"
+                    )
                     self.send_cmd(cmd)
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=green>操作成功!')
+                    self.textBrowser.append("<font color=green>操作成功!")
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=red>无效操作!')
+                    self.textBrowser.append("<font color=red>无效操作!")
 
         self.close_dev()
 
     def stop_num(self):
         try:
-            self.login_dev(cfg['HLR'])
+            self.login_dev(cfg["HLR"])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>连接出错!')
+            self.textBrowser.append("<font color=red>连接出错!")
             return
 
         if self.check_input():
             flag, num = self.check_input()
-            if Confirm('确认对 ' + num + ' 做停机?').comfirmed:
+            if Confirm("确认对 " + num + " 做停机?").comfirmed:
                 try:
                     imsi = self.get_imsi(flag, num)
-                    self.send_cmd('ZMGC:IMSI=' + imsi +
-                                  ':CBO=BAOC,CBI=BAIC;\r')
+                    self.send_cmd("ZMGC:IMSI=" + imsi + ":CBO=BAOC,CBI=BAIC;\r")
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=red>无效用户!')
+                    self.textBrowser.append("<font color=red>无效用户!")
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=green>操作成功!')
+                    self.textBrowser.append("<font color=green>操作成功!")
 
         self.close_dev()
 
     def rest_num(self):
         try:
-            self.login_dev(cfg['HLR'])
+            self.login_dev(cfg["HLR"])
         except:
             self.textBrowser.clear()
-            self.textBrowser.append('<font color=red>连接出错!')
+            self.textBrowser.append("<font color=red>连接出错!")
             return
 
         if self.check_input():
             flag, num = self.check_input()
-            if Confirm('确认对 ' + num + ' 做复机?').comfirmed:
+            if Confirm("确认对 " + num + " 做复机?").comfirmed:
                 try:
                     imsi = self.get_imsi(flag, num)
-                    self.send_cmd('ZMGD:IMSI=' + imsi + ';\r')
+                    self.send_cmd("ZMGD:IMSI=" + imsi + ";\r")
                 except:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=red>无效用户!')
+                    self.textBrowser.append("<font color=red>无效用户!")
                 else:
                     self.textBrowser.clear()
-                    self.textBrowser.append('<font color=green>操作成功!')
+                    self.textBrowser.append("<font color=green>操作成功!")
 
         self.close_dev()
 
     def login_dev(self, device):
-        self.statusBar().showMessage(' Connecting...')
-        host = str(device['host'])
-        port = int(device['port'])
-        username = (device['username']).encode('utf-8')
-        password = (device['password']).encode('utf-8')
+        self.statusBar().showMessage(" Connecting...")
+        host = str(device["host"])
+        port = int(device["port"])
+        username = (device["username"]).encode("utf-8")
+        password = (device["password"]).encode("utf-8")
         try:
             self.telnet.open(host, port)
-            self.telnet.read_until(b'ENTER USERNAME < ')
-            self.telnet.write(username + b'\r')
-            self.telnet.read_until(b'ENTER PASSWORD < ')
-            self.telnet.write(password + b'\r')
-            self.telnet.read_until(b'< ', 10)
-            self.statusBar().showMessage(' Connected!')
+            self.telnet.read_until(b"ENTER USERNAME < ")
+            self.telnet.write(username + b"\r")
+            self.telnet.read_until(b"ENTER PASSWORD < ")
+            self.telnet.write(password + b"\r")
+            self.telnet.read_until(b"< ", 10)
+            self.statusBar().showMessage(" Connected!")
         except:
-            self.statusBar().showMessage(' Connect failed!')
+            self.statusBar().showMessage(" Connect failed!")
             raise
 
     def close_dev(self):
         self.telnet.close()
-        self.statusBar().showMessage(' Disconnected')
+        self.statusBar().showMessage(" Disconnected")
 
     def send_cmd(self, cmd):
-        self.telnet.write(cmd.encode('utf-8'))
-        result = self.telnet.read_until(b'< ', 10).decode('utf-8')
+        self.telnet.write(cmd.encode("utf-8"))
+        result = self.telnet.read_until(b"< ", 10).decode("utf-8")
         self.save_log(result, logfile)
         return result
 
     def convert_msg(self, data):
-        msg = ''
-        for k in cfg['Order']:
+        msg = ""
+        for k in cfg["Order"]:
             if k in data:
-                if data[k] == '':
-                    data[k] = 'N'
-                name = cfg['Locale'].get(k, k)
-                msg += '<b>' + name + ':  </b>' + data[k] + '<br>'
+                if data[k] == "":
+                    data[k] = "N"
+                name = cfg["Locale"].get(k, k)
+                msg += "<b>" + name + ":  </b>" + data[k] + "<br>"
         return msg
 
     def match_data(self, data, pattern):
@@ -605,88 +645,87 @@ class DHLRForm(QMainWindow, uiform):
     def open_log(self, log):
         self.textBrowser.clear()
         try:
-            with open(log, 'r') as f:
+            with open(log, "r") as f:
                 txt = f.read()
         except:
-            txt = '<font color=red>没有日志!'
+            txt = "<font color=red>没有日志!"
         finally:
             self.textBrowser.setText(txt)
 
     def save_log(self, cmd, log):
         try:
-            f = open(log, 'a')
-            f.write((str(cmd)).replace('\r\n', '\n'))
+            f = open(log, "a")
+            f.write((str(cmd)).replace("\r\n", "\n"))
             f.close()
         except:
             pass
 
     def init_log(self, log):
         try:
-            f = open(log, 'w')
+            f = open(log, "w")
             f.truncate()
             f.close()
         except:
             pass
         self.textBrowser.clear()
-        self.textBrowser.append('<font color=green>操作成功!')
+        self.textBrowser.append("<font color=green>操作成功!")
 
 
 class CFxFrame(object):
     def __init__(self):
-        self.cfx_num = ''
-        self.cfx_type = ''
+        self.cfx_num = ""
+        self.cfx_type = ""
         self.frame = T.Tk()
-        self.frame.title('呼转')
+        self.frame.title("呼转")
         self.var = T.StringVar()
-        self.var.set('CFU')
-        for o, i in enumerate(['CFU', 'CFB', 'CFNA', 'CFNR', 'OCCF']):
-            T.Radiobutton(self.frame, text=i, variable=self.var,
-                          value=i).grid(row=0, column=o)
-        T.Label(self.frame, text='  - 选择呼转分类，并输入呼转号码。').grid(row=1,
-                                                             column=0,
-                                                             columnspan=4,
-                                                             sticky=T.W)
-        T.Label(self.frame,
-                text='    格式为: 8613004602000 或 8657512345678').grid(
-                    row=2, column=0, columnspan=4, sticky=T.W)
-        T.Label(self.frame, text='  - 选择分类，号码留空，则取消对应呼转。').grid(row=3,
-                                                                column=0,
-                                                                columnspan=4,
-                                                                sticky=T.W)
-        T.Label(self.frame, text='  呼转号码: ').grid(row=4, column=0, sticky=T.W)
+        self.var.set("CFU")
+        for o, i in enumerate(["CFU", "CFB", "CFNA", "CFNR", "OCCF"]):
+            T.Radiobutton(self.frame, text=i, variable=self.var, value=i).grid(
+                row=0, column=o
+            )
+        T.Label(self.frame, text="  - 选择呼转分类，并输入呼转号码。").grid(
+            row=1, column=0, columnspan=4, sticky=T.W
+        )
+        T.Label(self.frame, text="    格式为: 8613004602000 或 8657512345678").grid(
+            row=2, column=0, columnspan=4, sticky=T.W
+        )
+        T.Label(self.frame, text="  - 选择分类，号码留空，则取消对应呼转。").grid(
+            row=3, column=0, columnspan=4, sticky=T.W
+        )
+        T.Label(self.frame, text="  呼转号码: ").grid(row=4, column=0, sticky=T.W)
         self.num = T.Entry(self.frame)
         self.num.focus_set()
         self.num.grid(row=4, column=1, columnspan=2, sticky=T.EW)
-        T.Button(self.frame, text='OK', command=self.ok_clicked).grid(row=4,
-                                                                      column=3)
+        T.Button(self.frame, text="OK", command=self.ok_clicked).grid(row=4, column=3)
         self.frame.mainloop()
 
     def num_validated(self, num):
-        return (num.isdigit() and num.startswith('86') or num == 'E')
+        return num.isdigit() and num.startswith("86") or num == "E"
 
     def ok_clicked(self):
-        n = self.num.get().strip() or 'E'
+        n = self.num.get().strip() or "E"
         v = self.var.get().strip()
         if not self.num_validated(n):
             tkinter.messagebox.showerror(
-                '错误', '呼转号码格式无效!\n例子:\n8613004602000\n86575xxxxxxxx')
+                "错误", "呼转号码格式无效!\n例子:\n8613004602000\n86575xxxxxxxx"
+            )
         else:
             d = {
-                'CFU': '无条件',
-                'CFB': '遇忙',
-                'CFNA': '无应答',
-                'CFNR': '无网络',
-                'OCCF': '隐含呼转'
+                "CFU": "无条件",
+                "CFB": "遇忙",
+                "CFNA": "无应答",
+                "CFNR": "无网络",
+                "OCCF": "隐含呼转",
             }
-            if n == 'E':
-                if tkinter.messagebox.askokcancel('警告',
-                                                  '确认要取消 *' + d[v] + '* 呼转?'):
+            if n == "E":
+                if tkinter.messagebox.askokcancel("警告", "确认要取消 *" + d[v] + "* 呼转?"):
                     self.cfx_num = n
                     self.cfx_type = v
                     self.frame.destroy()
             else:
                 if tkinter.messagebox.askokcancel(
-                        '警告', '确认要 *' + d[v] + '* 呼转到 ' + n + ' ?'):
+                    "警告", "确认要 *" + d[v] + "* 呼转到 " + n + " ?"
+                ):
                     self.cfx_num = n
                     self.cfx_type = v
                     self.frame.destroy()
@@ -697,7 +736,7 @@ class Confirm(object):
         self.msg = msg
         self.box = T.Tk()
         self.box.withdraw()
-        if tkinter.messagebox.askokcancel('警告', msg):
+        if tkinter.messagebox.askokcancel("警告", msg):
             self.comfirmed = 1
             self.box.destroy()
         else:
@@ -705,7 +744,7 @@ class Confirm(object):
             self.box.destroy()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     DHLRWin = DHLRForm()
     DHLRWin.show()
