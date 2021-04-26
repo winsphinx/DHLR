@@ -29,7 +29,6 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        choco install upx
         pyinstaller -F -i DHLR.ico -w DHLR.pyw
         del DHLR.spec
         copy DHLR.* dist\
