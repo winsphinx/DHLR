@@ -209,7 +209,7 @@ class DHLRForm(QMainWindow, uiform):
             (
                 ".*?QUALITY OF SERVICES PROFILE . (\d+)"
                 ".*?APN \.+ ([\w\.]*)"
-                ".*?PDP CHARGING CHARACTERISTIC \. ([N\d]*)"
+                ".*?PDP CHARGING CHARACTERISTIC \. ([\w\d]*)"
             ),
             re.S | re.M,
         )
@@ -243,6 +243,7 @@ class DHLRForm(QMainWindow, uiform):
         r = re.compile(
             (
                 ".?AP NAME \.+ ([\w\.]*)"
+                ".*?CHARGING CHARACTERISTICS \.+ ([\w\d]*)"
                 ".*?AMBR DOWNLINK \.+ (\d+)"
                 ".*?AMBR UPLINK \.+ (\d+)"
             ),
@@ -250,7 +251,10 @@ class DHLRForm(QMainWindow, uiform):
         )
         try:
             db["AP4"] = ",".join(
-                [("(" + i[1] + "|" + i[2] + ")@" + i[0]) for i in r.findall(s)]
+                [
+                    ("(" + i[2] + "|" + i[3] + ")@" + i[0] + "#" + i[1])
+                    for i in r.findall(s)
+                ]
             )
         except:
             db["AP4"] = "N"
