@@ -77,7 +77,7 @@ class DHLRForm(QMainWindow, uiform):
             r = re.compile("(\d{15})", re.S)
             try:
                 return r.search(s).group()
-            except:
+            except Exception:
                 raise
 
     def get_vlr_info(self, msisdn, vlr):
@@ -118,7 +118,7 @@ class DHLRForm(QMainWindow, uiform):
     def query_user(self):
         try:
             self.login_dev(cfg["HLR"])
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>连接出错!")
             return
@@ -147,7 +147,7 @@ class DHLRForm(QMainWindow, uiform):
         )
         try:
             db = self.match_data(s, r)
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>无效用户!")
             self.close_dev()
@@ -173,7 +173,7 @@ class DHLRForm(QMainWindow, uiform):
         )
         try:
             db.update(self.match_data(s, r))
-        except:
+        except Exception:
             pass
 
         # To get ZMQO
@@ -187,7 +187,7 @@ class DHLRForm(QMainWindow, uiform):
         )
         try:
             db["SCP"] = ",".join(["=".join(i) for i in r.findall(s)])
-        except:
+        except Exception:
             db["SCP"] = "N"
 
         # To Get ZMBO
@@ -195,7 +195,7 @@ class DHLRForm(QMainWindow, uiform):
         r = re.compile(("([\w]{3}),000"), re.S | re.M)
         try:
             db["SERV"] = ",".join(r.findall(s))
-        except:
+        except Exception:
             pass
 
         # To get ZMNO
@@ -203,7 +203,7 @@ class DHLRForm(QMainWindow, uiform):
         r = ".*SGSN ADDRESS \.+ (?P<SGSN>\d*)" ".*NETWORK ACCESS \.+ (?P<NWACC>\w*)"
         try:
             db.update(self.match_data(s, r))
-        except:
+        except Exception:
             pass
         r = re.compile(
             (
@@ -217,7 +217,7 @@ class DHLRForm(QMainWindow, uiform):
             db["QOS"] = ",".join(
                 [("(" + i[0] + "@" + i[1] + ")#" + i[2]) for i in r.findall(s)]
             )
-        except:
+        except Exception:
             db["QOS"] = "N"
 
         # To Get ZMNF
@@ -231,7 +231,7 @@ class DHLRForm(QMainWindow, uiform):
         )
         try:
             db.update(self.match_data(s, r))
-        except:
+        except Exception:
             pass
         else:
             db["LTE"] = "DN:" + db["DN"] + ",UP:" + db["UP"]
@@ -256,7 +256,7 @@ class DHLRForm(QMainWindow, uiform):
                     for i in r.findall(s)
                 ]
             )
-        except:
+        except Exception:
             db["AP4"] = "N"
 
         # To Get ZMGO
@@ -267,7 +267,7 @@ class DHLRForm(QMainWindow, uiform):
         )
         try:
             db.update(self.match_data(s, r))
-        except:
+        except Exception:
             pass
 
         # To Get ZVIO
@@ -275,7 +275,7 @@ class DHLRForm(QMainWindow, uiform):
         r = re.compile((".*?SIFCID\.+ (\d+)"), re.S | re.M)
         try:
             db["SIF"] = ",".join(i for i in r.findall(s))
-        except:
+        except Exception:
             db["SIF"] = "N"
 
         # To Get LAC/CID
@@ -292,7 +292,7 @@ class DHLRForm(QMainWindow, uiform):
                     db["TIME"],
                     db["IMEI"],
                 ) = self.get_vlr_info(msisdn, vlr)
-            except:
+            except Exception:
                 pass
 
         # To Get VLRNAME
@@ -312,7 +312,7 @@ class DHLRForm(QMainWindow, uiform):
     def update_location(self):
         try:
             self.login_dev(cfg["HLR"])
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>连接出错!")
             return
@@ -323,7 +323,7 @@ class DHLRForm(QMainWindow, uiform):
                 try:
                     imsi = self.get_imsi(flag, num)
                     self.send_cmd("ZMIM:IMSI=" + imsi + ":VLR=N;\r")
-                except:
+                except Exception:
                     self.textBrowser.clear()
                     self.textBrowser.append("<font color=red>无效用户!")
                 else:
@@ -335,7 +335,7 @@ class DHLRForm(QMainWindow, uiform):
     def four_off(self):
         try:
             self.login_dev(cfg["HLR"])
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>连接出错!")
             return
@@ -346,7 +346,7 @@ class DHLRForm(QMainWindow, uiform):
                 try:
                     imsi = self.get_imsi(flag, num)
                     self.send_cmd("ZMNE:IMSI=" + imsi + ":STATUS=DENIED;\r")
-                except:
+                except Exception:
                     self.textBrowser.clear()
                     self.textBrowser.append("<font color=red>无效用户!")
                 else:
@@ -358,7 +358,7 @@ class DHLRForm(QMainWindow, uiform):
     def four_on(self):
         try:
             self.login_dev(cfg["HLR"])
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>连接出错!")
             return
@@ -369,7 +369,7 @@ class DHLRForm(QMainWindow, uiform):
                 try:
                     imsi = self.get_imsi(flag, num)
                     self.send_cmd("ZMNE:IMSI=" + imsi + ":STATUS=GRANTED;\r")
-                except:
+                except Exception:
                     self.textBrowser.clear()
                     self.textBrowser.append("<font color=red>无效用户!")
                 else:
@@ -381,7 +381,7 @@ class DHLRForm(QMainWindow, uiform):
     def three_off(self):
         try:
             self.login_dev(cfg["HLR"])
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>连接出错!")
             return
@@ -392,7 +392,7 @@ class DHLRForm(QMainWindow, uiform):
                 try:
                     imsi = self.get_imsi(flag, num)
                     self.send_cmd("ZMIM:IMSI=" + imsi + ":UREST=Y;\r")
-                except:
+                except Exception:
                     self.textBrowser.clear()
                     self.textBrowser.append("<font color=red>无效用户!")
                 else:
@@ -404,7 +404,7 @@ class DHLRForm(QMainWindow, uiform):
     def three_on(self):
         try:
             self.login_dev(cfg["HLR"])
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>连接出错!")
             return
@@ -415,7 +415,7 @@ class DHLRForm(QMainWindow, uiform):
                 try:
                     imsi = self.get_imsi(flag, num)
                     self.send_cmd("ZMIM:IMSI=" + imsi + ":UREST=N;\r")
-                except:
+                except Exception:
                     self.textBrowser.clear()
                     self.textBrowser.append("<font color=red>无效用户!")
                 else:
@@ -427,7 +427,7 @@ class DHLRForm(QMainWindow, uiform):
     def two_off(self):
         try:
             self.login_dev(cfg["HLR"])
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>连接出错!")
             return
@@ -438,7 +438,7 @@ class DHLRForm(QMainWindow, uiform):
                 try:
                     imsi = self.get_imsi(flag, num)
                     self.send_cmd("ZMIM:IMSI=" + imsi + ":GREST=Y;\r")
-                except:
+                except Exception:
                     self.textBrowser.clear()
                     self.textBrowser.append("<font color=red>无效用户!")
                 else:
@@ -450,7 +450,7 @@ class DHLRForm(QMainWindow, uiform):
     def two_on(self):
         try:
             self.login_dev(cfg["HLR"])
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>连接出错!")
             return
@@ -461,7 +461,7 @@ class DHLRForm(QMainWindow, uiform):
                 try:
                     imsi = self.get_imsi(flag, num)
                     self.send_cmd("ZMIM:IMSI=" + imsi + ":GREST=N;\r")
-                except:
+                except Exception:
                     self.textBrowser.clear()
                     self.textBrowser.append("<font color=red>无效用户!")
                 else:
@@ -473,7 +473,7 @@ class DHLRForm(QMainWindow, uiform):
     def kick(self):
         try:
             self.login_dev(cfg["HLR"])
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>连接出错!")
             return
@@ -489,7 +489,7 @@ class DHLRForm(QMainWindow, uiform):
                     self.send_cmd("ZMIM:IMSI=" + imsi + ":GREST=N;\r")
                     self.send_cmd("ZMNE:IMSI=" + imsi + ":STATUS=DENIED;\r")
                     self.send_cmd("ZMNE:IMSI=" + imsi + ":STATUS=GRANTED;\r")
-                except:
+                except Exception:
                     self.textBrowser.clear()
                     self.textBrowser.append("<font color=red>无效用户!")
                 else:
@@ -515,7 +515,7 @@ class DHLRForm(QMainWindow, uiform):
                         db["TIME"],
                         db["IMEI"],
                     ) = self.get_vlr_info(msisdn, vlr)
-                except:
+                except Exception:
                     pass
                 else:
                     found = 1
@@ -528,7 +528,7 @@ class DHLRForm(QMainWindow, uiform):
     def call_forward(self):
         try:
             self.login_dev(cfg["HLR"])
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>连接出错!")
             return
@@ -537,7 +537,7 @@ class DHLRForm(QMainWindow, uiform):
             flag, num = self.check_input()
             try:
                 imsi = self.get_imsi(flag, num)
-            except:
+            except Exception:
                 self.textBrowser.clear()
                 self.textBrowser.append("<font color=red>无效用户!")
             else:
@@ -558,7 +558,7 @@ class DHLRForm(QMainWindow, uiform):
     def stop_num(self):
         try:
             self.login_dev(cfg["HLR"])
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>连接出错!")
             return
@@ -569,7 +569,7 @@ class DHLRForm(QMainWindow, uiform):
                 try:
                     imsi = self.get_imsi(flag, num)
                     self.send_cmd("ZMGC:IMSI=" + imsi + ":CBO=BAOC,CBI=BAIC;\r")
-                except:
+                except Exception:
                     self.textBrowser.clear()
                     self.textBrowser.append("<font color=red>无效用户!")
                 else:
@@ -581,7 +581,7 @@ class DHLRForm(QMainWindow, uiform):
     def rest_num(self):
         try:
             self.login_dev(cfg["HLR"])
-        except:
+        except Exception:
             self.textBrowser.clear()
             self.textBrowser.append("<font color=red>连接出错!")
             return
@@ -592,7 +592,7 @@ class DHLRForm(QMainWindow, uiform):
                 try:
                     imsi = self.get_imsi(flag, num)
                     self.send_cmd("ZMGD:IMSI=" + imsi + ";\r")
-                except:
+                except Exception:
                     self.textBrowser.clear()
                     self.textBrowser.append("<font color=red>无效用户!")
                 else:
@@ -615,7 +615,7 @@ class DHLRForm(QMainWindow, uiform):
             self.telnet.write(password + b"\r")
             self.telnet.read_until(b"< ", 10)
             self.statusBar().showMessage(" Connected!")
-        except:
+        except Exception:
             self.statusBar().showMessage(" Connect failed!")
             raise
 
@@ -643,7 +643,7 @@ class DHLRForm(QMainWindow, uiform):
         r = re.compile(pattern, re.S)
         try:
             return r.match(data).groupdict()
-        except:
+        except Exception:
             raise
 
     def open_log(self, log):
@@ -651,7 +651,7 @@ class DHLRForm(QMainWindow, uiform):
         try:
             with open(log, "r") as f:
                 txt = f.read()
-        except:
+        except Exception:
             txt = "<font color=red>没有日志!"
         finally:
             self.textBrowser.setText(txt)
@@ -661,7 +661,7 @@ class DHLRForm(QMainWindow, uiform):
             f = open(log, "a")
             f.write((str(cmd)).replace("\r\n", "\n"))
             f.close()
-        except:
+        except Exception:
             pass
 
     def init_log(self, log):
@@ -669,7 +669,7 @@ class DHLRForm(QMainWindow, uiform):
             f = open(log, "w")
             f.truncate()
             f.close()
-        except:
+        except Exception:
             pass
         self.textBrowser.clear()
         self.textBrowser.append("<font color=green>操作成功!")
