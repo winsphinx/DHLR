@@ -302,7 +302,10 @@ class DHLRForm(QMainWindow, uiform):
             for line in f:
                 places.append(line.strip().split())
         vlrdict = {x: y for [x, y] in places}
-        db["PLACE"] = vlr + " (" + vlrdict.get(vlr, "未知") + ")"
+        if vlr:
+            db["PLACE"] = vlr + " (" + vlrdict.get(vlr, "未知") + ")"
+        else:
+            db["PLACE"] = "NONE"
 
         # To create and convert data
         self.textBrowser.clear()
