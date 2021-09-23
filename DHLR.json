@@ -62,7 +62,7 @@
 
     "Locale": {
         "SAM": "<a href=# title='ALL=国际\nNAT=全国'>漫游权限</a>",
-        "RP": "<a href=# title='1=省内\n2=本地\n99=港澳台\nN=不限'>漫游范围</a>",
+        "RP": "<a href=# title='1=省内\n2=本地\n99=港澳台\n70=携出\nN=不限'>漫游范围</a>",
         "SERV": "<a href=# title='T11=语音\nT22=发短信\nT21=收短信\nB1F=视频'>业务类别</a>",
         "BAOC": "<a href=# title='Y A=不能打出\n其他=不限制'>限制主叫</a>",
         "BAIC": "<a href=# title='Y A=不能打进\n其他=不限制'>限制被叫</a>",
