@@ -1,5 +1,5 @@
 # DHLR
-[![Python application](https://github.com/winsphinx/DHLR/actions/workflows/python-app.yml/badge.svg)](https://github.com/winsphinx/DHLR/actions/workflows/python-app.yml)
+[![Build application](https://github.com/winsphinx/DHLR/actions/workflows/build-app.yml/badge.svg)](https://github.com/winsphinx/DHLR/actions/workflows/build-app.yml)
 
 ## Info
 
