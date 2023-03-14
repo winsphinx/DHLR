@@ -31,6 +31,8 @@ jobs:
         nuitka --standalone --show-memory --show-progress --assume-yes-for-downloads --nofollow-imports --plugin-enable=pyqt5,tk-inter --follow-import-to=utils,src --output-dir=out --windows-disable-console --windows-icon-from-ico=DHLR.ico DHLR.pyw
         copy DHLR.* out\DHLR.dist\
         copy VLR.* out\DHLR.dist\
+        copy LICENSE out\DHLR.dist\
+        copy requirements.txt out\DHLR.dist\
         7z a DHLR.zip .\out\DHLR.dist\*
 
     - name: Create GitHub Release
