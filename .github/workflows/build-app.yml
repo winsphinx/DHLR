@@ -3,9 +3,8 @@ name: Build application
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    tags:
+      - v[0-9]+.*
 
 jobs:
   build:
@@ -13,32 +12,39 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.7
         architecture: 'x86'
 
-    - name: Install dependencies
+    - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install nuitka
         pip install -r requirements.txt
 
-    - name: Build with nuitka
+    - name: Build with Nuitka
       run: |
         nuitka --standalone --show-memory --show-progress --assume-yes-for-downloads --nofollow-imports --plugin-enable=pyqt5,tk-inter --follow-import-to=utils,src --output-dir=out --windows-disable-console --windows-icon-from-ico=DHLR.ico DHLR.pyw
         copy DHLR.* out\DHLR.dist\
         copy VLR.* out\DHLR.dist\
         7z a DHLR.zip .\out\DHLR.dist\*
 
-    - name: Create GitHub release
+    - name: Create GitHub Release
       uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: latest
         prerelease: false
         files:
           DHLR.zip
+
+    - name: Cleanup Histories
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        token: ${{ github.token }}
+        repository: ${{ github.repository }}
+        retain_days: 30
+        keep_minimum_runs: 6
